@@ -20,7 +20,7 @@ def run(data_func, finstudy: FinStudy, sink):
     # check data_func
     since_val, until_val = finstudy._data_validation.index[0], finstudy._data_validation.index[-1]
     data_validation_hat = data_func(since_val, until_val, finstudy._data_validation.fin.asset_names.to_list())
-    np.testing.assert_allclose(data_validation_hat.values, finstudy._data_validation.values)
+    pd.testing.assert_frame_equal(data_validation_hat, finstudy._data_validation)
 
     # test finstudy
     for i, pub_data in enumerate(finstudy.ensemble.publish(finstudy._data_validation[-1:])):
