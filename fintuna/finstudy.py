@@ -53,7 +53,7 @@ class FinStudy:
 
         if 'test_until' in split_specs:
             if type(split_specs['test_until']) is str:
-                self.test_until = pd.Timestamp(split_specs['test_until'], tz=tzutc())
+                self.test_until = pd.Timestamp(split_specs['test_until'], tz=tzutc())  # todo support multiple timezones
             if type(split_specs['test_until']) is int:
                 self.test_until = data.index[split_specs['test_until']]
             if type(split_specs['test_until']) is float:

@@ -19,6 +19,7 @@ log.addHandler(fh_info)
 def run(data_func, finstudy: FinStudy, sink):
     # check data_func
     since_val, until_val = finstudy._data_validation.index[0], finstudy._data_validation.index[-1]
+    since_val -= pd.Timedelta(finstudy.period)  # data_func is right bound -> first observation at since + period
     data_validation_hat = data_func(since_val, until_val, finstudy._data_validation.fin.asset_names.to_list())
     pd.testing.assert_frame_equal(data_validation_hat, finstudy._data_validation)
 
@@ -26,7 +27,7 @@ def run(data_func, finstudy: FinStudy, sink):
     for i, pub_data in enumerate(finstudy.ensemble.publish(finstudy._data_validation[-1:])):
         for j, value in enumerate(pub_data):
             if type(value) is pd.Series:
-                np.testing.assert_allclose(value.values, finstudy._pub_data_validation[i][j].values)
+                    np.testing.assert_allclose(value.values, finstudy._pub_data_validation[i][j].values)
             else:
                 assert value == finstudy._pub_data_validation[i][j]
 
@@ -42,9 +43,8 @@ def run(data_func, finstudy: FinStudy, sink):
             self.prev_data = pd.DataFrame()
 
         def __call__(self, *args, **kwargs):
-            now = pd.Timestamp.utcnow().floor(finstudy.period)
-            if finstudy.offset:
-                now += pd.Timedelta(finstudy.offset)
+            now = pd.Timestamp.utcnow().floor(finstudy.sampling_freq)
+            now += pd.Timedelta(finstudy.offset)
             # get data. also fetch the previous data point for lookahead checks
             since = now - pd.Timedelta(finstudy.period) - pd.Timedelta(finstudy.sampling_freq)
             data = data_func(since, now, finstudy.ensemble.asset_ids)
@@ -69,7 +69,7 @@ def run(data_func, finstudy: FinStudy, sink):
             for args in finstudy.ensemble.publish(cnt_data):
                 sink(*args)
 
-
-    scheduler.add_job(LookaheadCheck(), 'interval', seconds=int(trigger_dur_dt.total_seconds()),
+    lookahead_check = LookaheadCheck()
+    scheduler.add_job(lookahead_check, 'interval', seconds=int(trigger_dur_dt.total_seconds()),
                   start_date=next_interval.to_pydatetime())
     scheduler.start()
