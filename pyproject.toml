@@ -1,0 +1,33 @@
+[build-system]
+requires = [
+    "setuptools>=61.0",
+    "pandas~=1.2.3",
+    "numpy~=1.20.0",
+    "matplotlib~=3.3",
+    "scikit-learn==0.24.1",
+    "APScheduler==3.7.0",
+    "lightgbm==3.2.1",
+    "shap~=0.40.0",
+    "QuantStats==0.0.46",
+    "optuna~=3.0.0"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fintuna"
+version = "0.0.2"
+authors = [
+    { name = "Cortecs", email = "office@cortecs.ai" },
+]
+description = "Automated Machine Learning for Financial Time Series"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/markoarnauto/fintuna"
+"Bug Tracker" = "https://github.com/markoarnauto/fintuna/issues"
