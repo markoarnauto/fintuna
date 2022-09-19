@@ -15,7 +15,9 @@ slippage = .002
 fees = .002
 EXECUTION_COSTS = fees + slippage
 class ModelBase(ABC):
-
+    """
+    as example refer to Pumps
+    """
     def __init__(self, trial: optuna.Trial, n_jobs=-1, group_by_asset=None):
         self.trial = trial
         self.clf = None
@@ -59,7 +61,7 @@ class ModelBase(ABC):
     def shap_values(self, X):
         return self.clf.predict_proba(X, pred_contrib=True)[:, :-1]
 
-    def get_feature_importances(self):
+    def get_feature_importances(self) -> pd.Series:
         return pd.Series(self.clf.booster_.feature_importance(importance_type='gain'), index=self.selected_features)
 
     def _fit(self, X, y):
@@ -147,10 +149,24 @@ class ModelBase(ABC):
 
     @abstractmethod
     def extract_label(self, data, period) -> pd.DataFrame:
+        """
+
+        :param data:
+        :param period:
+        :return:
+        """
         pass
 
     @abstractmethod
     def realized_returns(self, predictions, conf_threshold, returns, period) -> pd.Series:
+        """
+
+        :param predictions:
+        :param conf_threshold:
+        :param returns:
+        :param period:
+        :return:
+        """
         pass
 
     def get_performance(self, realized_returns) -> float:

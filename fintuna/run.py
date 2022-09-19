@@ -17,6 +17,14 @@ log.addHandler(fh_info)
 
 
 def run(data_func, finstudy: FinStudy, sink):
+    """
+
+    :param data_func:
+    :param finstudy:
+    :param sink:
+    :return:
+    """
+
     # check data_func
     since_val, until_val = finstudy._data_validation.index[0], finstudy._data_validation.index[-1]
     since_val -= pd.Timedelta(finstudy.period)  # data_func is right bound -> first observation at since + period

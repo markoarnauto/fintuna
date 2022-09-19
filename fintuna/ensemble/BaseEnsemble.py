@@ -2,6 +2,9 @@ from abc import ABC, abstractmethod
 import pandas as pd
 
 class BaseEnsemble(ABC):
+    """
+    explain the concept
+    """
     def __init__(self, models: list, returns_column, period, **kwargs):
         self.models = models
         self.returns_column = returns_column

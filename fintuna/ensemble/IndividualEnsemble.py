@@ -4,6 +4,9 @@ from fintuna.ensemble.BaseEnsemble import BaseEnsemble
 
 
 class IndividualEnsemble(BaseEnsemble):
+    """
+
+    """
     def __init__(self, models: list, returns_column, period, **kwargs):
         super().__init__(models, returns_column, period, **kwargs)
         self.weight = 1 / len(models)  # equally weighted. todo support weighting

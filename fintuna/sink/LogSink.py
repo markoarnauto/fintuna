@@ -1,5 +1,8 @@
 
 class LogSink:
+    """
+
+    """
     def __init__(self, **kwargs):
         pass
 

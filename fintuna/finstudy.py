@@ -1,13 +1,14 @@
 import logging
 import multiprocessing
 import pickle
-from typing import Type
+from typing import Type, List
 
 import numpy as np
 import optuna
 import pandas as pd
 from dateutil.tz import tzutc
 from optuna.study import StudyDirection
+from optuna.trial import FrozenTrial
 
 from fintuna.ensemble.IndividualEnsemble import IndividualEnsemble
 from fintuna.ensemble.BaseEnsemble import BaseEnsemble
@@ -17,8 +18,20 @@ n_cores = multiprocessing.cpu_count()
 np.random.seed(0)
 
 class FinStudy:
-    def __init__(self, Model: Type[ModelBase], data: pd.DataFrame, data_specs: dict = {}, split_specs: dict = {}, name: str = 'fin-study'):
+    """A finstudy corresponds to a financial optimization task.
+    A :class:`Model <fintuna.model.ModelBase>` is optimized based on the given `data`.
+    It provides interfaces to get the out-of-sample performance and let's you fine-tune a model for production.
+    """
 
+    def __init__(self, Model: Type[ModelBase], data: pd.DataFrame, data_specs: dict = {}, split_specs: dict = {}, name: str = 'fin-study'):
+        """
+
+        :param Model:
+        :param data:
+        :param data_specs:
+        :param split_specs:
+        :param name:
+        """
         if 'sampling_freq' not in data_specs:
             if data.index.freqstr:
                 self.sampling_freq = data.index.freqstr
@@ -87,15 +100,27 @@ class FinStudy:
             models.append(model)
         return self.ensemble_class(models, self.returns_column, self.period, **self.ensemble_params)
 
-    def get_best_trials(self):
+    # todo make private
+    def get_best_trials(self) -> List[FrozenTrial]:
         trials_df = self.study.trials_dataframe()
         ascending = self.study.direction == StudyDirection.MINIMIZE
         best_trial_ids = trials_df.sort_values('value', ascending=ascending)[:self.ensemble_size]['number']
         best_trials = [trial for trial in self.study.get_trials() if trial.number in best_trial_ids]
         return best_trials
 
-    # todo support multiple ensembles
-    def explore(self, ensemble_class: Type[BaseEnsemble] = IndividualEnsemble, study_params: dict = None, sampling_params: dict = None, model_params: dict = None, ensemble_size=1, conf_thrs_trials=20, n_trials=100, ensemble_params: dict = None):
+    def explore(self, ensemble_class: Type[BaseEnsemble] = IndividualEnsemble, study_params: dict = None, sampling_params: dict = None, model_params: dict = None, ensemble_size=1, conf_thrs_trials=20, n_trials=100, ensemble_params: dict = None) -> dict:
+        """
+
+        :param ensemble_class:
+        :param study_params:
+        :param sampling_params:
+        :param model_params:
+        :param ensemble_size:
+        :param conf_thrs_trials:
+        :param n_trials:
+        :param ensemble_params:
+        :return:
+        """
         study_params = study_params if study_params else {'direction': 'maximize'}
         if sampling_params:
             if 'n_startup_trials' in sampling_params:
@@ -166,7 +191,11 @@ class FinStudy:
 
 
     def finetune(self, n_trials=100):
+        """
 
+        :param n_trials:
+        :return:
+        """
         for i in range(n_trials):
             trial = self.study.ask()
             model = self.Model(trial, **self.model_params)

@@ -2,7 +2,9 @@ from fintuna.model.LongOnly import LongOnly
 
 
 class Pumps(LongOnly):
+    """
 
+    """
     def init_classifier(self):
         clf = super().init_classifier()
         clf.set_params(is_unblance=True)
