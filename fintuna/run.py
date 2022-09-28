@@ -6,8 +6,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 
 from fintuna import FinStudy
 
-logging.basicConfig(level=logging.DEBUG, filemode='w')  # this must be lowest log level
-logging.getLogger('matplotlib.font_manager').disabled = True
+logging.basicConfig(level = logging.INFO)
 log = logging.getLogger('live')
 
 def run(data_func, finstudy: FinStudy, sink):
@@ -75,4 +74,5 @@ def run(data_func, finstudy: FinStudy, sink):
     lookahead_check = LookaheadCheck()
     scheduler.add_job(lookahead_check, 'interval', seconds=int(trigger_dur_dt.total_seconds()),
                   start_date=next_interval.to_pydatetime())
+    log.info(f'Scheduler started. {type(sink).__name__} will be triggered each {finstudy.sampling_freq}')
     scheduler.start()

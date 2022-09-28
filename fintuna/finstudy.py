@@ -16,14 +16,14 @@ from fintuna.model.ModelBase import ModelBase
 
 n_cores = multiprocessing.cpu_count()
 np.random.seed(0)
+log = logging.getLogger('train')
 
 class FinStudy:
     """A finstudy corresponds to a financial optimization task.
     A :class:`Model <fintuna.model.ModelBase>` is optimized based on the given `data`.
     It provides interfaces to get the out-of-sample performance and let's you fine-tune a model for production.
     """
-
-    def __init__(self, Model: Type[ModelBase], data: pd.DataFrame, data_specs: dict = {}, split_specs: dict = {}, name: str = 'fin-study'):
+    def __init__(self, Model: Type[ModelBase], data: pd.DataFrame, data_specs: dict = {}, split_specs: dict = {}, name: str = 'finstudy'):
         """
 
         :param Model:
@@ -101,14 +101,14 @@ class FinStudy:
         return self.ensemble_class(models, self.returns_column, self.period, **self.ensemble_params)
 
     # todo make private
-    def get_best_trials(self) -> List[FrozenTrial]:
+    def _get_best_trials(self, n_trials) -> List[FrozenTrial]:
         trials_df = self.study.trials_dataframe()
         ascending = self.study.direction == StudyDirection.MINIMIZE
-        best_trial_ids = trials_df.sort_values('value', ascending=ascending)[:self.ensemble_size]['number']
+        best_trial_ids = trials_df.sort_values('value', ascending=ascending)[:n_trials]['number']
         best_trials = [trial for trial in self.study.get_trials() if trial.number in best_trial_ids]
         return best_trials
 
-    def explore(self, ensemble_class: Type[BaseEnsemble] = IndividualEnsemble, study_params: dict = None, sampling_params: dict = None, model_params: dict = None, ensemble_size=1, conf_thrs_trials=20, n_trials=100, ensemble_params: dict = None) -> dict:
+    def explore(self, ensemble_class: Type[BaseEnsemble] = IndividualEnsemble, study_params: dict = None, sampling_params: dict = None, model_params: dict = None, ensemble_size=1, ensemble_params: dict = None, conf_thrs_trials=20, n_trials=100) -> dict:
         """
         Tune the :class:`Model <fintuna.model.ModelBase>` and retrieve out-of-sample performance. Use :class:`Ensembles <fintuna.ensemble.BaseEnsemble` to combine the best performing models (by default the best model is used individually).
         :param ensemble_class: Type of ensemble to use.
@@ -127,7 +127,7 @@ class FinStudy:
                 sampling_params['n_startup_trials'] *= conf_thrs_trials
         else:
             sampling_params = {
-                'n_startup_trials': 5 * conf_thrs_trials,
+                'n_startup_trials': 10 * conf_thrs_trials,
                 'seed': 0
                                }
         self.model_params = model_params if model_params else {}
@@ -144,8 +144,9 @@ class FinStudy:
         explore_data_train = self.data[:self.train_until - pd.Timedelta(self.period)]
         explore_data_test = self.data[self.train_until:self.test_until]
 
+        log.info('start tuning')
         for i in range(n_trials):
-
+            log.info(f'iteration {i + 1}/{n_trials}')
             tmp_trial = self.study.ask()
             model = self.Model(tmp_trial, **self.model_params)
             model.train(explore_data_train, self.period)
@@ -168,11 +169,11 @@ class FinStudy:
                 params_thrs = tmp_trial.params.copy()
                 params_thrs['conf_thrs'] = thrs
                 dist_thrs = tmp_trial.distributions.copy()
-                dist_thrs['conf_thrs'] = optuna.distributions.UniformDistribution(min_prediction, max_prediction)
+                dist_thrs['conf_thrs'] = optuna.distributions.FloatDistribution(min_prediction, max_prediction)
                 trial_thrs = optuna.trial.create_trial(params=params_thrs, distributions=dist_thrs, value=performance)
                 self.study.add_trial(trial_thrs)
         # select best trials to form an ensemble
-        best_trials = self.get_best_trials()
+        best_trials = self._get_best_trials(self.ensemble_size)
 
         # held-out data
         self.real_data_train = self.data[:self.test_until - pd.Timedelta(self.period)]
@@ -185,7 +186,7 @@ class FinStudy:
         dur = out_of_sample_realized_returns.index[-1] - out_of_sample_realized_returns.index[0]
         exposure = exposed_dur / dur
         # get exposure adjusted benchmark
-        benchmark_realized_returns = self.real_data_test.loc[:, (slice(None), self.returns_column)].mean(axis=1) * exposure
+        benchmark_realized_returns = self.real_data_test.loc[:, (slice(None), self.returns_column)].resample(self.period).last().mean(axis=1) * exposure
 
         feature_importances = self.ensemble.feature_importances()
         shap_values = self.ensemble.shap_values(self.real_data_test)
@@ -193,7 +194,7 @@ class FinStudy:
         return {'feature_importances': feature_importances, 'shap_values': shap_values, 'performance': out_of_sample_realized_returns, 'benchmark': benchmark_realized_returns}
 
 
-    def finetune(self, n_trials=100):
+    def finish(self, n_candidates=None):
         """
         Apply this method before deploying a model.
         Given the best models of exploration-phase, it sub-selects the best performing models including the held-out data
@@ -201,22 +202,27 @@ class FinStudy:
         :param n_candidates: Number of best performing models in the exploration-phase to consider for final selection.
         :return:
         """
-        for i in range(n_trials):
-            trial = self.study.ask()
+        if not n_candidates:
+            n_candidates = self.ensemble_size * 5
+
+        # todo store candidate models while exploring
+        candidate_trials = self._get_best_trials(n_candidates)
+        log.info('selecting best out-of-sample models')
+        for trial in candidate_trials:
             model = self.Model(trial, **self.model_params)
 
             predictions = model.train(self.real_data_train, self.period).predict(self.real_data_test)
             returns_test = self.real_data_test.loc[:, (model.asset_ids, [self.returns_column])]
             returns_test = returns_test.shift(freq=f'-{self.period}').reindex(predictions.index)
 
-            conf_thrs = trial.suggest_uniform('conf_thrs', 0., 1.)
+            conf_thrs = model.trial.params['conf_thrs']
             real_returns = model.realized_returns(predictions, conf_thrs, returns_test, self.period)
-            performance = model.get_performance(real_returns)
-            self.study.tell(trial, performance)
-
-        best_trials = self.get_best_trials()
+            trial.performance = model.get_performance(real_returns)
+            log.info(f'out-of-sample performance: {trial.performance}')
+        final_trials = sorted(candidate_trials, key=lambda x: x.performance, reverse=True)[:self.ensemble_size]
+    
         # refit on all data
-        self.ensemble = self._create_ensemble(best_trials, self.data)
+        self.ensemble = self._create_ensemble(final_trials, self.data)
         self._data_validation = self.data[-10:]  # keep a tiny fraction of data for consistency checks
         self._pub_data_validation = [pd for pd in self.ensemble.publish(self._data_validation[-1:])]  # todo pick periods
         del self.data  # not needed anymore, makes pickeling cheaper
