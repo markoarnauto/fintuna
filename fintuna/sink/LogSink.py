@@ -1,7 +1,7 @@
 
 class LogSink:
     """
-
+    A sink for testing.
     """
     def __init__(self, **kwargs):
         pass

@@ -3,7 +3,7 @@ import pandas as pd
 
 class BaseEnsemble(ABC):
     """
-    explain the concept
+    An interface for combining multiple models.
     """
     def __init__(self, models: list, returns_column, period, **kwargs):
         self.models = models
@@ -15,13 +15,22 @@ class BaseEnsemble(ABC):
             self.asset_ids.update(model.asset_ids)
             self.features.update(model.selected_features)
 
-    # specify which data is passed to sink
     @abstractmethod
     def publish(self, data):
+        """
+        Specify which data is passed to sink
+        :param data: Panel data. Pandas multiindex DataFrame with [specific format](./docs/concepts#data).
+        :return:
+        """
         pass
 
     @abstractmethod
     def realized_returns(self, data):
+        """
+        Specify how ensemble a combined to generate returns.
+        :param data: Panel data. Pandas multiindex DataFrame with [specific format](./docs/concepts#data).
+        :return:
+        """
         pass
 
     # average feature importance

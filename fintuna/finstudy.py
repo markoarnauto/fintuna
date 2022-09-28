@@ -27,10 +27,10 @@ class FinStudy:
         """
 
         :param Model:
-        :param data:
-        :param data_specs:
-        :param split_specs:
-        :param name:
+        :param data: Panel data. Pandas multiindex DataFrame with [specific format](./docs/concepts#data).
+        :param data_specs: Panel data specification.
+        :param split_specs: Train, test, evaluation data specifications.
+        :param name: Name of study.
         """
         if 'sampling_freq' not in data_specs:
             if data.index.freqstr:
@@ -110,16 +110,16 @@ class FinStudy:
 
     def explore(self, ensemble_class: Type[BaseEnsemble] = IndividualEnsemble, study_params: dict = None, sampling_params: dict = None, model_params: dict = None, ensemble_size=1, conf_thrs_trials=20, n_trials=100, ensemble_params: dict = None) -> dict:
         """
-
-        :param ensemble_class:
-        :param study_params:
-        :param sampling_params:
-        :param model_params:
-        :param ensemble_size:
-        :param conf_thrs_trials:
-        :param n_trials:
-        :param ensemble_params:
-        :return:
+        Tune the :class:`Model <fintuna.model.ModelBase>` and retrieve out-of-sample performance. Use :class:`Ensembles <fintuna.ensemble.BaseEnsemble` to combine the best performing models (by default the best model is used individually).
+        :param ensemble_class: Type of ensemble to use.
+        :param study_params: Params of the optuna study
+        :param sampling_params:  Params of optuna sampler.
+        :param model_params: Params of :class:`Model <fintuna.model.ModelBase>`
+        :param ensemble_size: How many of best models to combine.
+        :param ensemble_params: Params of :class:`Model <fintuna.ensemble.BaseEnsemble>`
+        :param conf_thrs_trials: How many different confidence thresholds to try for each trial
+        :param n_trials: Number of trials (= tuning iterations)
+        :return: Tuning results including feature importances, shap values, out-of-sample performance and buy-and-hold (benchmark) performance
         """
         study_params = study_params if study_params else {'direction': 'maximize'}
         if sampling_params:
@@ -154,7 +154,9 @@ class FinStudy:
             returns = explore_data_test.loc[:, (model.asset_ids, [self.returns_column])]
             returns = returns - returns.xs(self.returns_column, axis=1, level=1).stack().mean()  # remove trend
             returns = returns.shift(freq=f'-{self.period}').reindex(predictions.index)
-
+            
+            # create multiple trials with varying confidence thresholds
+            # note: there might be easier solutions as we are not sampling from conf_thrs (fintuna >= 0.0.4)
             min_prediction, max_prediction = predictions.stack().min(), predictions.stack().max()
             for thrs in np.random.uniform(min_prediction, max_prediction, conf_thrs_trials):
                 realized_returns = model.realized_returns(predictions, thrs, returns, self.period)
@@ -172,6 +174,7 @@ class FinStudy:
         # select best trials to form an ensemble
         best_trials = self.get_best_trials()
 
+        # held-out data
         self.real_data_train = self.data[:self.test_until - pd.Timedelta(self.period)]
         self.real_data_test = self.data[self.test_until:]
         self.ensemble = self._create_ensemble(best_trials, self.real_data_train)
@@ -192,8 +195,10 @@ class FinStudy:
 
     def finetune(self, n_trials=100):
         """
-
-        :param n_trials:
+        Apply this method before deploying a model.
+        Given the best models of exploration-phase, it sub-selects the best performing models including the held-out data
+        and refits them on all of the data.
+        :param n_candidates: Number of best performing models in the exploration-phase to consider for final selection.
         :return:
         """
         for i in range(n_trials):

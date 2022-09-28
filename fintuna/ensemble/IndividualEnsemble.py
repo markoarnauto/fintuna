@@ -5,7 +5,7 @@ from fintuna.ensemble.BaseEnsemble import BaseEnsemble
 
 class IndividualEnsemble(BaseEnsemble):
     """
-
+    Treat each model individually. It's like having multiple separate models, each allocating only a fraction of funds.
     """
     def __init__(self, models: list, returns_column, period, **kwargs):
         super().__init__(models, returns_column, period, **kwargs)

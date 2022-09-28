@@ -4,12 +4,21 @@ from fintuna.model.ModelBase import ModelBase, EXECUTION_COSTS
 
 
 class LongOnly(ModelBase):
+    """
+    Most basic example to override :class:`Model <fintuna.model.ModelBase>`.
+    """
     def extract_label(self, data, period):
+        """
+        Predict whether asset returns will be positive.
+        """
         returns = data.xs('return', axis=1, level=1)
         next_returns = returns.shift(freq=f'-{period}')
         return next_returns > 0.
 
     def realized_returns(self, predictions, conf_threshold, returns, period):
+        """
+        Buy an asset when it is predicted to have positive returns with given confidence.
+        """
         trades = predictions.rank(axis=1, ascending=False, method='first') <= 1
         trades[predictions < conf_threshold] = False
 
