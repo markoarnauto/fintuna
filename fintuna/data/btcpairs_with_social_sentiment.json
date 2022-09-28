@@ -1,0 +1,6 @@
+{
+  "offset": "21m",
+  "returns_column": "return",
+  "period": "24h",
+  "sampling_freq": "3h"
+}
