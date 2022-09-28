@@ -37,10 +37,10 @@ class ModelBase(ABC):
         else:
             self.group_by_asset = self.trial.suggest_categorical('group_by_asset', [True, False])
 
-    def select_assets(self, data, period) -> list:
+    def _select_assets(self, data, period) -> list:
         return data.fin.asset_names
 
-    def init_classifier(self) -> sklearn.base.ClassifierMixin:
+    def _init_classifier(self) -> sklearn.base.ClassifierMixin:
         clf = lgb.LGBMClassifier(**{'verbosity': -1,
                                     'objective': 'binary',
                                     'metric': 'binary_logloss',
@@ -51,22 +51,22 @@ class ModelBase(ABC):
         clf.set_params(**{
             'n_estimators': self.trial.suggest_int('n_estimators', 50, 1000),
             'max_depth': self.trial.suggest_int('max_depth', 2, 31),
-            'subsample': self.trial.suggest_uniform('subsample', .4, 1.),
+            'subsample': self.trial.suggest_float('subsample', .4, 1.),
             'lambda_l1': self.trial.suggest_loguniform('lambda_l1', .01, 10.),
             'lambda_l2': self.trial.suggest_loguniform('lambda_l2', .01, 10.),
             'num_leaves': self.trial.suggest_int('num_leaves', 2, 63),
-            'feature_fraction': self.trial.suggest_uniform('feature_fraction', .5, 1.)
+            'feature_fraction': self.trial.suggest_float('feature_fraction', .5, 1.)
         })
         return clf
 
-    def select_features(self, X_train, y_train, X_estimation, y_estimation, period):
+    def _select_features(self, X_train, y_train, X_estimation, y_estimation, period):
         return X_train.columns
 
     # build an explainer if selected model doesn't already support shap values
-    def create_explainer(self, model, X, y):
+    def _create_explainer(self, model, X, y):
         pass
 
-    def shap_values(self, X):
+    def _shap_values(self, X):
         return self.clf.predict_proba(X, pred_contrib=True)[:, :-1]
 
     def get_feature_importances(self) -> pd.Series:
@@ -87,7 +87,7 @@ class ModelBase(ABC):
         # self.explainer = None  # if train is called multiple times -> reset explainer
         # assert self.trial['prediction_dur'] == data.attrs['prediction_dur']
 
-        self.asset_ids = self.select_assets(data, period)
+        self.asset_ids = self._select_assets(data, period)
         if not len(self.asset_ids):  # todo make some more checks
             raise ValueError('No assets selected')
         data = data[self.asset_ids]
@@ -112,7 +112,7 @@ class ModelBase(ABC):
         # avoid look ahead bias
         X_train, y_train = X[:split_at - pd.Timedelta(period)], y[:split_at - pd.Timedelta(period)]
         X_test, y_test = X[split_at:], y[split_at:]
-        self.selected_features = self.select_features(X_train, y_train, X_test, y_test, period)
+        self.selected_features = self._select_features(X_train, y_train, X_test, y_test, period)
         selected_features_type = type(self.selected_features)
         if len(self.selected_features) < 1 or len(self.selected_features) > len(data.fin.feature_names) \
                 or set(self.selected_features) - set(data.fin.feature_names):
@@ -120,11 +120,11 @@ class ModelBase(ABC):
         if selected_features_type is not pd.Series and selected_features_type is not pd.Index:
             ValueError('Selected features have invalid type')
 
-        self.clf = self.init_classifier()
+        self.clf = self._init_classifier()
         self._fit(X[self.selected_features], y)  # refit
 
         if explainer:
-            self.explainer = self.create_explainer(self.clf, X[self.selected_features], y)
+            self.explainer = self._create_explainer(self.clf, X[self.selected_features], y)
         return self  # function chaining
 
     def predict(self, data) -> pd.DataFrame:
@@ -134,6 +134,8 @@ class ModelBase(ABC):
         """
         data = data[self.asset_ids]
         X = data.fin.stack_asset_data()
+        asset_ids_dtype = X['asset_id'].dtype
+
         # keep categorical features
         categorical_features = data.select_dtypes('category').fin.feature_names.to_list() + ['asset_id']
         X[categorical_features] = X[categorical_features].astype('category')
@@ -142,7 +144,7 @@ class ModelBase(ABC):
         predictions = self._predict_proba(X)
 
         # unstack predictions
-        predictions['asset_id'] = X_asset_ids.astype(int)
+        predictions['asset_id'] = X_asset_ids.astype(asset_ids_dtype)
         predictions = predictions.pivot(columns=['asset_id']).droplevel(0, axis=1)
         return predictions
 
@@ -161,7 +163,7 @@ class ModelBase(ABC):
         max_size = 1000
         if len(X) > max_size:
             X = X.sample(max_size, random_state=0).sort_index()
-        return pd.DataFrame(self.shap_values(X), columns=self.selected_features, index=X.index)
+        return pd.DataFrame(self._shap_values(X), columns=self.selected_features, index=X.index)
 
     @abstractmethod
     def extract_label(self, data, period) -> pd.DataFrame:
