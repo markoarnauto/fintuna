@@ -1,5 +1,9 @@
 from fintuna.finstudy import FinStudy
 from fintuna.run import run
+from fintuna.data import data
+from fintuna.utils import utils
+import fintuna.model
+import fintuna.sink
 import pandas as pd
 
 @pd.api.extensions.register_dataframe_accessor("fin")
