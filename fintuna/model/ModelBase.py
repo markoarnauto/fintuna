@@ -16,9 +16,17 @@ fees = .002
 EXECUTION_COSTS = fees + slippage
 class ModelBase(ABC):
     """
-    as example refer to Pumps
+    It wraps a machine-learning classifier to be used for asset-selection.
+    It specifies what the classifier should predict (e.g. directional change)
+    and further how those predictions correspond to performance (e.g. cumulative returns).
+    A :class:`finstudy <fintuna.finstudy.FinStudy>` is able to tune and evaluate this model.
     """
-    def __init__(self, trial: optuna.Trial, n_jobs=-1, group_by_asset=None):
+    def __init__(self, trial: optuna.trial.BaseTrial, n_jobs=-1, group_by_asset=None):
+        """
+        :param trial: Optuna trial responsible for hyper-parameter handling
+        :param n_jobs: Cores to be used for calculations
+        :param group_by_asset: Use asset ids as (categorical) feature
+        """
         self.trial = trial
         self.clf = None
         self.explainer = None
@@ -74,6 +82,7 @@ class ModelBase(ABC):
         X = X[self.selected_features]
         return pd.DataFrame(self.clf.predict_proba(X)[:, 1], index=X.index)
 
+    # train the model
     def train(self, data, period, explainer=False):
         # self.explainer = None  # if train is called multiple times -> reset explainer
         # assert self.trial['prediction_dur'] == data.attrs['prediction_dur']
@@ -118,8 +127,11 @@ class ModelBase(ABC):
             self.explainer = self.create_explainer(self.clf, X[self.selected_features], y)
         return self  # function chaining
 
-    def predict(self, data):
-
+    def predict(self, data) -> pd.DataFrame:
+        """
+        :param data: Panel data. Pandas multiindex DataFrame with [specific format](./docs/concepts#data).
+        :return: prediction probabilities
+        """
         data = data[self.asset_ids]
         X = data.fin.stack_asset_data()
         # keep categorical features
@@ -134,7 +146,11 @@ class ModelBase(ABC):
         predictions = predictions.pivot(columns=['asset_id']).droplevel(0, axis=1)
         return predictions
 
-    def explain(self, data):
+    def explain(self, data) -> pd.DataFrame:
+        """
+        :param data: Panel data. Pandas multiindex DataFrame with [specific format](./docs/concepts#data).
+        :return: shap values
+        """
         data = data[self.asset_ids]
         X = data.fin.stack_asset_data()
         categorical_features = data.select_dtypes('category').fin.feature_names.to_list() + ['asset_id']
@@ -150,8 +166,8 @@ class ModelBase(ABC):
     @abstractmethod
     def extract_label(self, data, period) -> pd.DataFrame:
         """
-
-        :param data:
+        Specify what the classifier should learn.
+        :param data: Panel data. Pandas multiindex DataFrame with [specific format](./docs/concepts#data).
         :param period:
         :return:
         """
@@ -160,7 +176,7 @@ class ModelBase(ABC):
     @abstractmethod
     def realized_returns(self, predictions, conf_threshold, returns, period) -> pd.Series:
         """
-
+        Specify how predictions corresponds to returns.
         :param predictions:
         :param conf_threshold:
         :param returns:
@@ -170,5 +186,10 @@ class ModelBase(ABC):
         pass
 
     def get_performance(self, realized_returns) -> float:
+        """
+        Specify how returns correspond to performance (= objective of the tuning process)
+        :param realized_returns:
+        :return:
+        """
         return realized_returns.sum()
 

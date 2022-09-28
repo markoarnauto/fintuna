@@ -1,5 +1,4 @@
 import logging
-from logging import handlers
 
 import numpy as np
 import pandas as pd
@@ -10,18 +9,14 @@ from fintuna import FinStudy
 logging.basicConfig(level=logging.DEBUG, filemode='w')  # this must be lowest log level
 logging.getLogger('matplotlib.font_manager').disabled = True
 log = logging.getLogger('live')
-fh_info = handlers.RotatingFileHandler('./logs/ensemble.info')
-fh_info.setLevel(logging.INFO)
-fh_info.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
-log.addHandler(fh_info)
-
 
 def run(data_func, finstudy: FinStudy, sink):
     """
-
-    :param data_func:
-    :param finstudy:
-    :param sink:
+    This function triggers the :class:`finstudy <fintuna.model.ModelBase>` periodically and forwards the results to the sink.
+    It also checks the data generating process (data_func) for validity (e.g. is there a look-ahead-bias)
+    :param data_func: A function that retrieves the data alias the [Data generating process](./docs/concepts#dgp)
+    :param finstudy: The :class:`finstudy <fintuna.model.ModelBase>` to deploy.
+    :param sink: A callable object that forwards or processes the output of a deployed model (e.g. trading-engine)
     :return:
     """
 
@@ -38,7 +33,7 @@ def run(data_func, finstudy: FinStudy, sink):
                     np.testing.assert_allclose(value.values, finstudy._pub_data_validation[i][j].values)
             else:
                 assert value == finstudy._pub_data_validation[i][j]
-
+    log.info('checks complete!')
 
     scheduler = BlockingScheduler(timezone='utc')
     trigger_dur_dt = pd.Timedelta(finstudy.sampling_freq)
