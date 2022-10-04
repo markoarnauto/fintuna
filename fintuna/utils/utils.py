@@ -3,16 +3,33 @@ import quantstats as qs
 from matplotlib import pyplot as plt
 import matplotlib.ticker as mtick
 
-# generate sophisticated performance analysis as html
+
 def create_tearsheet(performance, benchmark_performance, file):
+    """
+    generate sophisticated performance analysis as html file
+    """
     returns = performance.resample('1d').sum(min_count=1)
     returns.index = pd.to_datetime(returns.index.date, format="%Y-%m-%d")
     benchmark_returns = benchmark_performance.resample('1d').sum()
     benchmark_returns.index = pd.to_datetime(benchmark_returns.index.date, format="%Y-%m-%d")
     qs.reports.html(returns, benchmark_returns, compounded=False, periods_per_year=365, output=file)
 
+def get_performance_metrics(performance, benchmark_performance, display=False):
+    """
+    get performance metrics
+    """
+    returns = performance.resample('1d').sum(min_count=1)
+    returns.index = pd.to_datetime(returns.index.date, format="%Y-%m-%d")
+    benchmark_returns = benchmark_performance.resample('1d').sum()
+    benchmark_returns.index = pd.to_datetime(benchmark_returns.index.date, format="%Y-%m-%d")
+    return qs.reports.metrics(returns, benchmark_returns, compounded=False, periods_per_year=365, prepare_returns=False, display=display)
+
+
 # simple performance plot
 def plot_backtest(performance, benchmark_performance):
+    """
+    plot backtest
+    """
     ax = (performance * 100).cumsum().plot(title='Cumulative Returns', label='strategy')
     (benchmark_performance * 100).cumsum().plot(label='buy & hold', style='--')
     ax.yaxis.set_major_formatter(mtick.PercentFormatter())
@@ -21,7 +38,9 @@ def plot_backtest(performance, benchmark_performance):
 
 # get close and volume for multiple assets from binance
 def get_crypto_data(client, symbols, since, until, interval):
-    # see [fintuna data format]()
+    """
+    get klines from binance for multiple symbols
+    """
     expected_ts = pd.date_range(since, until, freq=interval, closed='right')
     asset_feature_columns = pd.MultiIndex.from_product([symbols, ['volume', 'return']])
     data = pd.DataFrame(index=expected_ts, columns=asset_feature_columns)
@@ -36,7 +55,9 @@ def get_crypto_data(client, symbols, since, until, interval):
 
 # transform time series data to include lagged data (and percentage change)
 def lagged_features(data: pd.DataFrame, period, n_periods) -> pd.DataFrame:
-
+    """
+    add lagged features to a DataFrame
+    """
     assert n_periods > 10  # reasonable number of past periods is essential
     feature_names = data.fin.feature_names
     period_dt = pd.Timedelta(period)
@@ -61,8 +82,10 @@ def lagged_features(data: pd.DataFrame, period, n_periods) -> pd.DataFrame:
     data_extended = data_extended.loc[data.index, :]
     return data_extended
 
-# rolling zscore
 def zscore(x, n_periods, period, min_periods=None):
+    """
+    rolling zscore
+    """
     period_dt = pd.Timedelta(period)
     r = x.rolling(window=n_periods * period_dt, min_periods=min_periods)
     s = r.std(ddof=0).shift(freq=period_dt).reindex(x.index)

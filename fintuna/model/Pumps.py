@@ -3,16 +3,16 @@ from fintuna.model.LongOnly import LongOnly
 
 class Pumps(LongOnly):
     """
-    Buy assets which are predicted to have abnormally high returns.
+    A long-only strategy focussing on abnormally high returns
     """
     def _init_classifier(self):
         clf = super()._init_classifier()
-        clf.set_params(is_unblance=True)
+        clf.set_params(is_unbalance=True)  # use unbalanced sampling
         return clf
 
     def extract_label(self, data, period):
         """
-        Predict if assets yield abnormal returns. What is qualified as `abnormal` is tuned (as hyper-parameter).
+        Predict if asset returns will be in the top quantile. The quantile is a hyperparameter ranging from 20% to 2%.
         """
         anomaly_magnitude = self.trial.suggest_float('anomaly_magnitude', .8, .98)
         returns = data.xs('return', axis=1, level=1)

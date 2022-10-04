@@ -13,11 +13,14 @@ version = '0.1.0'
 
 extensions = [
     'sphinx.ext.duration',
-    'sphinx.ext.doctest',
+    # 'sphinx.ext.doctest',
+    'myst_nb',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
 ]
+autosummary_generate = True
+# autoapi_dirs = ['../../fintuna']
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3/', None),

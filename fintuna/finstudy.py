@@ -25,11 +25,22 @@ class FinStudy:
     """
     def __init__(self, Model: Type[ModelBase], data: pd.DataFrame, data_specs: dict = {}, split_specs: dict = {}, name: str = 'finstudy'):
         """
-
         :param Model:
-        :param data: Panel data. Pandas multiindex DataFrame with [specific format](./docs/concepts#data).
-        :param data_specs: Panel data specification.
-        :param split_specs: Train, test, evaluation data specifications.
+        :param data: Panel data
+        :param data_specs:
+                Panel data specification.
+                    'return_column' str (mandatory): column containing asset returns
+
+                    'period' str (mandatory): aggregation period (e.g. '1h', '2d')
+
+                    'sampling_freq' str (optional): sampling frequency (e.g. '1h', '2d'), defaults to period
+
+                    'offset' str (optional): offset of sampling_freq (e.g. '20m')
+        :param split_specs:
+                Split specification for train, tune and eval data.
+                    'tune_until' date string, int, float: end of tune data, defaults to 80% of the data
+
+                    'train_until' date string, int, float: end of train data, defaults to 60% of tune data
         :param name: Name of study.
         """
         if 'sampling_freq' not in data_specs:
@@ -64,28 +75,28 @@ class FinStudy:
         else:
             self.offset = data_specs['offset']
 
-        if 'test_until' in split_specs:
-            if type(split_specs['test_until']) is str:
-                self.test_until = pd.Timestamp(split_specs['test_until'], tz=tzutc())  # todo support multiple timezones
-            if type(split_specs['test_until']) is int:
-                self.test_until = data.index[split_specs['test_until']]
-            if type(split_specs['test_until']) is float:
-                self.test_until = data.index[int(len(data) * split_specs['test_until'])]
+        if 'tune_until' in split_specs:
+            if type(split_specs['tune_until']) is str:
+                self.tune_until = pd.Timestamp(split_specs['tune_until'], tz=tzutc())  # todo support multiple timezones
+            if type(split_specs['tune_until']) is int:
+                self.tune_until = data.index[split_specs['tune_until']]
+            if type(split_specs['tune_until']) is float:
+                self.tune_until = data.index[int(len(data) * split_specs['tune_until'])]
         else:
-            self.test_until = data.index[int(len(data) * .8)]
+            self.tune_until = data.index[int(len(data) * .8)]
 
-        test_len = len(data[:self.test_until])
+        test_len = len(data[:self.tune_until])
         if 'train_until' in split_specs:
             if type(split_specs['train_until']) is str:
-                self.train_until = pd.Timestamp(split_specs['test_until'], tz=tzutc())
+                self.train_until = pd.Timestamp(split_specs['train_until'], tz=tzutc())
             if type(split_specs['train_until']) is int:
-                self.train_until = data.index[split_specs['test_until']]
+                self.train_until = data.index[split_specs['train_until']]
             if type(split_specs['train_until']) is float:
-                self.train_until = data.index[int(test_len * split_specs['test_until'])]
+                self.train_until = data.index[int(test_len * split_specs['train_until'])]
         else:
             self.train_until = data.index[int(test_len * .6)]
-        if self.train_until > self.test_until:
-            raise ValueError('train_until must be smaller than test_until')
+        if self.train_until > self.tune_until:
+            raise ValueError('train_until must be smaller than tune_until')
 
         self.returns_column = data_specs['returns_column']
         self.name = name
@@ -110,16 +121,25 @@ class FinStudy:
 
     def explore(self, ensemble_class: Type[BaseEnsemble] = IndividualEnsemble, study_params: dict = None, sampling_params: dict = None, model_params: dict = None, ensemble_size=1, ensemble_params: dict = None, conf_thrs_trials=20, n_trials=100) -> dict:
         """
-        Tune the :class:`Model <fintuna.model.ModelBase>` and retrieve out-of-sample performance. Use :class:`Ensembles <fintuna.ensemble.BaseEnsemble` to combine the best performing models (by default the best model is used individually).
-        :param ensemble_class: Type of ensemble to use.
-        :param study_params: Params of the optuna study
-        :param sampling_params:  Params of optuna sampler.
-        :param model_params: Params of :class:`Model <fintuna.model.ModelBase>`
-        :param ensemble_size: How many of best models to combine.
+        Train, Tune and explore the performance of a Model. Use Ensemble to combine the best performing models.
+
+        :param ensemble_class: Ensemble to use
+        :param study_params: Params of the `optuna study <https://optuna.readthedocs.io/en/v3.0.0/reference/generated/optuna.study.create_study.html#optuna.study.create_study>`_
+        :param sampling_params:  Params of `optuna sampler <https://optuna.readthedocs.io/en/v3.0.0/reference/samplers/generated/optuna.samplers.TPESampler.html>`_
+        :param model_params: Params of :py:class:`Model <fintuna.model.ModelBase>`
+        :param ensemble_size: Number of best models to combine, defaults to 1 (= no ensemble)
         :param ensemble_params: Params of :class:`Model <fintuna.ensemble.BaseEnsemble>`
-        :param conf_thrs_trials: How many different confidence thresholds to try for each trial
-        :param n_trials: Number of trials (= tuning iterations)
-        :return: Tuning results including feature importances, shap values, out-of-sample performance and buy-and-hold (benchmark) performance
+        :param conf_thrs_trials: Number of trials to simulate different confidence thresholds
+        :param n_trials: Number of trials
+        :return:
+            Tuning results
+                'feature_importances': pandas Series of feature importances
+
+                'shap': tuple of (shap values, expected value, observations)
+
+                'performance': out-of-sample returns (nan values indicate no exposure)
+
+                'benchmark_performance': buy-and-hold returns weighted by exposure of 'performance'
         """
         study_params = study_params if study_params else {'direction': 'maximize'}
         if sampling_params:
@@ -142,7 +162,7 @@ class FinStudy:
         # train test split
         # exclude one prediction_dur to avoid look ahead bias at feature stacking
         explore_data_train = self.data[:self.train_until - pd.Timedelta(self.period)]
-        explore_data_test = self.data[self.train_until:self.test_until]
+        explore_data_test = self.data[self.train_until:self.tune_until]
 
         log.info('start tuning')
         for i in range(n_trials):
@@ -176,8 +196,8 @@ class FinStudy:
         best_trials = self._get_best_trials(self.ensemble_size)
 
         # held-out data
-        self.real_data_train = self.data[:self.test_until - pd.Timedelta(self.period)]
-        self.real_data_test = self.data[self.test_until:]
+        self.real_data_train = self.data[:self.tune_until - pd.Timedelta(self.period)]
+        self.real_data_test = self.data[self.tune_until:]
         self.ensemble = self._create_ensemble(best_trials, self.real_data_train)
 
         out_of_sample_realized_returns = self.ensemble.realized_returns(self.real_data_test)
@@ -191,16 +211,16 @@ class FinStudy:
         feature_importances = self.ensemble.feature_importances()
         shap_values = self.ensemble.shap_values(self.real_data_test)
         # todo support asset specific explanations
-        return {'feature_importances': feature_importances, 'shap_values': shap_values, 'performance': out_of_sample_realized_returns, 'benchmark': benchmark_realized_returns}
+        return {'feature_importances': feature_importances, 'shap': shap_values, 'performance': out_of_sample_realized_returns, 'benchmark': benchmark_realized_returns}
 
 
     def finish(self, n_candidates=None):
         """
-        Apply this method before deploying a model.
-        Given the best models of exploration-phase, it sub-selects the best performing models including the held-out data
-        and refits them on all of the data.
-        :param n_candidates: Number of best performing models in the exploration-phase to consider for final selection.
-        :return:
+        Prepares a model for production.
+        Uses best models of tune data as candidates and sub-selects models that also perform well on eval data.
+        Refits models on all data.
+
+        :param n_candidates: Number of candidates to consider for selection, defaults to 5 * ensemble_size
         """
         if not n_candidates:
             n_candidates = self.ensemble_size * 5

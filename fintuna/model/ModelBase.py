@@ -16,16 +16,15 @@ fees = .002
 EXECUTION_COSTS = fees + slippage
 class ModelBase(ABC):
     """
-    It wraps a machine-learning classifier to be used for asset-selection.
-    It specifies what the classifier should predict (e.g. directional change)
-    and further how those predictions correspond to performance (e.g. cumulative returns).
-    A :class:`finstudy <fintuna.finstudy.FinStudy>` is able to tune and evaluate this model.
+    A wrapper for an ML-classifier.
+    It specifies what the classifier should predict
+    and how those predictions correspond to performance (= trading-strategy).
     """
     def __init__(self, trial: optuna.trial.BaseTrial, n_jobs=-1, group_by_asset=None):
         """
-        :param trial: Optuna trial responsible for hyper-parameter handling
-        :param n_jobs: Cores to be used for calculations
-        :param group_by_asset: Use asset ids as (categorical) feature
+        :param trial: Optuna trial
+        :param n_jobs: Cores used for training the classifier
+        :param group_by_asset: Use asset ids as (categorical) features
         """
         self.trial = trial
         self.clf = None
@@ -66,8 +65,10 @@ class ModelBase(ABC):
     def _create_explainer(self, model, X, y):
         pass
 
-    def _shap_values(self, X):
-        return self.clf.predict_proba(X, pred_contrib=True)[:, :-1]
+    # get shap values and expected value
+    def _shap_values(self, X) -> tuple:
+        shap_values_lgbm_format = self.clf.predict_proba(X, pred_contrib=True)
+        return shap_values_lgbm_format[:, :-1], shap_values_lgbm_format[0, -1]
 
     def get_feature_importances(self) -> pd.Series:
         return pd.Series(self.clf.booster_.feature_importance(importance_type='gain'), index=self.selected_features)
@@ -129,7 +130,7 @@ class ModelBase(ABC):
 
     def predict(self, data) -> pd.DataFrame:
         """
-        :param data: Panel data. Pandas multiindex DataFrame with [specific format](./docs/concepts#data).
+        :param data: Panel data
         :return: prediction probabilities
         """
         data = data[self.asset_ids]
@@ -148,10 +149,10 @@ class ModelBase(ABC):
         predictions = predictions.pivot(columns=['asset_id']).droplevel(0, axis=1)
         return predictions
 
-    def explain(self, data) -> pd.DataFrame:
+    def explain(self, data) -> tuple:
         """
-        :param data: Panel data. Pandas multiindex DataFrame with [specific format](./docs/concepts#data).
-        :return: shap values
+        :param data: Panel data
+        :return: shap values, expected value, observations
         """
         data = data[self.asset_ids]
         X = data.fin.stack_asset_data()
@@ -160,16 +161,18 @@ class ModelBase(ABC):
         X = X[self.selected_features]
 
         # subsampling big data sets
-        max_size = 1000
+        max_size = 5000
         if len(X) > max_size:
             X = X.sample(max_size, random_state=0).sort_index()
-        return pd.DataFrame(self._shap_values(X), columns=self.selected_features, index=X.index)
+        shap_values, expected_value = self._shap_values(X)
+        return pd.DataFrame(shap_values, columns=self.selected_features, index=X.index), expected_value, X
 
     @abstractmethod
     def extract_label(self, data, period) -> pd.DataFrame:
         """
         Specify what the classifier should learn.
-        :param data: Panel data. Pandas multiindex DataFrame with [specific format](./docs/concepts#data).
+
+        :param data: Panel data
         :param period:
         :return:
         """
@@ -178,7 +181,8 @@ class ModelBase(ABC):
     @abstractmethod
     def realized_returns(self, predictions, conf_threshold, returns, period) -> pd.Series:
         """
-        Specify how predictions corresponds to returns.
+        Specify how predictions corresponds to returns (= prediction-returns mapping)
+
         :param predictions:
         :param conf_threshold:
         :param returns:
@@ -190,6 +194,7 @@ class ModelBase(ABC):
     def get_performance(self, realized_returns) -> float:
         """
         Specify how returns correspond to performance (= objective of the tuning process)
+
         :param realized_returns:
         :return:
         """

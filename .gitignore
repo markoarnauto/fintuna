@@ -1,5 +1,7 @@
 # custom
 .idea
+docs/source/_autosummary
+example_templates
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,jupyternotebooks
 

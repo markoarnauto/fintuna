@@ -5,7 +5,7 @@ from fintuna.model.ModelBase import ModelBase, EXECUTION_COSTS
 
 class LongOnly(ModelBase):
     """
-    Most basic example to override :class:`Model <fintuna.model.ModelBase>`.
+    Basic long-only trading-strategy.
     """
     def extract_label(self, data, period):
         """
@@ -17,7 +17,7 @@ class LongOnly(ModelBase):
 
     def realized_returns(self, predictions, conf_threshold, returns, period):
         """
-        Buy an asset when it is predicted to have positive returns with given confidence.
+        Buy the asset with the most confident prediction.
         """
         trades = predictions.rank(axis=1, ascending=False, method='first') <= 1
         trades[predictions < conf_threshold] = False

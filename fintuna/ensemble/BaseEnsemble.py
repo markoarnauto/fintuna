@@ -19,22 +19,27 @@ class BaseEnsemble(ABC):
     def publish(self, data):
         """
         Specify which data is passed to sink
-        :param data: Panel data. Pandas multiindex DataFrame with [specific format](./docs/concepts#data).
-        :return:
+
+        :param data: Panel data
         """
         pass
 
     @abstractmethod
     def realized_returns(self, data):
         """
-        Specify how ensemble a combined to generate returns.
-        :param data: Panel data. Pandas multiindex DataFrame with [specific format](./docs/concepts#data).
-        :return:
+        Specify how models are combined to generate returns
+
+        :param data: Panel data
         """
         pass
 
     # average feature importance
     def feature_importances(self):
+        """
+        Combine features importances
+
+        :return: feature importance
+        """
         feature_importances = []
         for model in self.models:
             feature_importances.append(model.get_feature_importances())
@@ -42,11 +47,18 @@ class BaseEnsemble(ABC):
 
     # average shap values
     def shap_values(self, data):
+        """
+        Combine shap values
+
+        :param data: Panel data
+        :return: tuple (shap values, expected value, observations)
+        """
         shap_values = []
-        for model in self.models:
-            shap_values.append(model.explain(data))
+        for model in self.models:  # average shap values
+            shap_values_model, expected_value, observations = model.explain(data)
+            shap_values.append(shap_values_model)
         shap_values = pd.concat(shap_values, axis=1, keys=range(len(self.models)))
-        return shap_values.mean(axis=1, level=1)
+        return shap_values.mean(axis=1, level=1), expected_value, observations
 
     def __len__(self):
         return len(self.models)

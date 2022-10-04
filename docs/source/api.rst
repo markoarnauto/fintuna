@@ -1,7 +1,14 @@
 API
-===
+=====
 
+.. hidden::
 .. autosummary::
-   :toctree: generated
+    :toctree: _autosummary
+        :hidden:
+    :recursive:
 
-   fintuna
+    fintuna.FinStudy
+    fintuna.run
+    fintuna.model
+    fintuna.sink
+    fintuna.utils

@@ -11,12 +11,13 @@ log = logging.getLogger('live')
 
 def run(data_func, finstudy: FinStudy, sink):
     """
-    This function triggers the :class:`finstudy <fintuna.model.ModelBase>` periodically and forwards the results to the sink.
-    It also checks the data generating process (data_func) for validity (e.g. is there a look-ahead-bias)
-    :param data_func: A function that retrieves the data alias the [Data generating process](./docs/concepts#dgp)
-    :param finstudy: The :class:`finstudy <fintuna.model.ModelBase>` to deploy.
-    :param sink: A callable object that forwards or processes the output of a deployed model (e.g. trading-engine)
-    :return:
+    This function calls a finstudy according to its sampling_freq periodically. It forwards the results to the sink.
+    It also checks whether the data generating process (data_func) is valid (e.g. look-ahead-bias detection).
+
+    :param data_func:
+        A function which expects parameters (since, until, assets) and returns the panel data (see *Crypto End2End Prediction*)
+    :param finstudy: The finstudy to deploy
+    :param sink: A callable object that forwards or processes the output, e.g. a trading-engine (see :py:class:`fintuna.sink.LogSink`)
     """
 
     # check data_func
