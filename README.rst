@@ -59,7 +59,7 @@ Fintuna uses walk-forward backtesting.
 Executing the `fintuna.Finstudy.explore` method multiple times on same data introduces the risk of overfitting.
 **Use feature importance and shap values, rather than merely looking at trading performance.**
 
-.. image:: images/backtesting.png
+.. image:: https://github.com/markoarnauto/fintuna/blob/main/docs/source/images/backtesting.png?raw=true
     :alt: Walk-Forward Backtesting
 
 
