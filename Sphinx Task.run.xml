@@ -15,7 +15,7 @@
       <option name="useCurrentConnection" value="false" />
     </EXTENSION>
     <option name="docutils_input_file" value="$PROJECT_DIR$/../fintuna/docs/source" />
-    <option name="docutils_output_file" value="$PROJECT_DIR$/../fintuna/build" />
+    <option name="docutils_output_file" value="$PROJECT_DIR$/../fintuna/docs/" />
     <option name="docutils_params" value="" />
     <option name="docutils_task" value="html" />
     <option name="docutils_open_in_browser" value="false" />

@@ -2,7 +2,7 @@
 .idea
 docs/source/_autosummary
 example_templates
-jupyter_execute
+docs/jupyter_execute
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,jupyternotebooks
 
