@@ -9,4 +9,3 @@ QuantStats==0.0.46
 optuna~=3.0.0
 python-binance~=1.0.0
 tables~=3.7.0
-myst-nb~=0.17.1
