@@ -14,7 +14,7 @@ def get_btcpairs_with_social_sentiment() -> tuple:
         "period": "24h",
         "sampling_freq": "3h"
     }
-    data = pd.read_hdf(os.path.dirname(__file__) + '/btcpairs_with_social_sentiment_small.h5')  # type: pd.DataFrame
+    data = pd.read_hdf(os.path.dirname(__file__) + '/btcpairs_with_social_sentiment.h5')  # type: pd.DataFrame
     ## preprocessing
     # lagging those features makes less sense
     features_to_exclude = ['trading_volume__max', 'spread', 'rsi__6h', 'trading_volume__ema_6h',
