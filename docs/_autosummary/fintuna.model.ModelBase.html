@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>fintuna.model.ModelBase &mdash; Fintuna 0.1 documentation</title>
@@ -83,7 +83,7 @@ and how those predictions correspond to performance (= trading-strategy).</p>
 <dt class="sig sig-object py" id="fintuna.model.ModelBase.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseTrial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_by_asset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fintuna.model.ModelBase.__init__" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>trial</strong> – Optuna trial</p></li>
 <li><p><strong>n_jobs</strong> – Cores used for training the classifier</p></li>
@@ -95,14 +95,10 @@ and how those predictions correspond to performance (= trading-strategy).</p>
 
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code>(trial[, n_jobs, group_by_asset])</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">param trial</dt>
+<dt class="field-odd">param trial<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Optuna trial</p>
 </dd>
 </dl>
@@ -110,7 +106,7 @@ and how those predictions correspond to performance (= trading-strategy).</p>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">explain</span></code>(data)</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">param data</dt>
+<dt class="field-odd">param data<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Panel data</p>
 </dd>
 </dl>
@@ -127,7 +123,7 @@ and how those predictions correspond to performance (= trading-strategy).</p>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code>(data)</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">param data</dt>
+<dt class="field-odd">param data<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Panel data</p>
 </dd>
 </dl>
@@ -145,10 +141,10 @@ and how those predictions correspond to performance (= trading-strategy).</p>
 <dt class="sig sig-object py" id="fintuna.model.ModelBase.explain">
 <span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.10)"><span class="pre">tuple</span></a></span></span><a class="headerlink" href="#fintuna.model.ModelBase.explain" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> – Panel data</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>shap values, expected value, observations</p>
 </dd>
 </dl>
@@ -159,13 +155,13 @@ and how those predictions correspond to performance (= trading-strategy).</p>
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extract_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#fintuna.model.ModelBase.extract_label" title="Permalink to this definition"></a></dt>
 <dd><p>Specify what the classifier should learn.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> – Panel data</p></li>
 <li><p><strong>period</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -176,10 +172,10 @@ and how those predictions correspond to performance (= trading-strategy).</p>
 <span class="sig-name descname"><span class="pre">get_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">realized_returns</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><span class="pre">float</span></a></span></span><a class="headerlink" href="#fintuna.model.ModelBase.get_performance" title="Permalink to this definition"></a></dt>
 <dd><p>Specify how returns correspond to performance (= objective of the tuning process)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>realized_returns</strong> – </p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -189,10 +185,10 @@ and how those predictions correspond to performance (= trading-strategy).</p>
 <dt class="sig sig-object py" id="fintuna.model.ModelBase.predict">
 <span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#fintuna.model.ModelBase.predict" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> – Panel data</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>prediction probabilities</p>
 </dd>
 </dl>
@@ -203,7 +199,7 @@ and how those predictions correspond to performance (= trading-strategy).</p>
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">realized_returns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conf_threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">returns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Series</span></span></span><a class="headerlink" href="#fintuna.model.ModelBase.realized_returns" title="Permalink to this definition"></a></dt>
 <dd><p>Specify how predictions corresponds to returns (= prediction-returns mapping)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>predictions</strong> – </p></li>
 <li><p><strong>conf_threshold</strong> – </p></li>
@@ -211,7 +207,7 @@ and how those predictions correspond to performance (= trading-strategy).</p>
 <li><p><strong>period</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>

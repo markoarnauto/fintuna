@@ -14,11 +14,16 @@ version = '0.1.0'
 extensions = [
     'sphinx.ext.duration',
     # 'sphinx.ext.doctest',
+    'sphinx_toolbox.sidebar_links',
+    'sphinx_toolbox.github',
     'myst_nb',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
 ]
+github_username = 'markoarnauto'
+github_repository = 'fintuna'
+
 autosummary_generate = True
 # autoapi_dirs = ['../../fintuna']
 

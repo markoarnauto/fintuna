@@ -10,3 +10,6 @@
     examples
     api
 
+.. sidebar-links::
+    :github:
+    :pypi: fintuna

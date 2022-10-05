@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>fintuna.FinStudy &mdash; Fintuna 0.1 documentation</title>
@@ -83,7 +83,7 @@ It provides interfaces to get the out-of-sample performance and let’s you fine
 <dt class="sig sig-object py" id="fintuna.FinStudy.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.10)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="fintuna.model.ModelBase.html#fintuna.model.ModelBase" title="fintuna.model.ModelBase.ModelBase"><span class="pre">ModelBase</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_specs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><span class="pre">dict</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_specs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><span class="pre">dict</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'finstudy'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fintuna.FinStudy.__init__" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Model</strong> – </p></li>
 <li><p><strong>data</strong> – Panel data</p></li>
@@ -109,14 +109,10 @@ It provides interfaces to get the out-of-sample performance and let’s you fine
 
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#fintuna.FinStudy.__init__" title="fintuna.FinStudy.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(Model, data[, data_specs, ...])</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">param Model</dt>
+<dt class="field-odd">param Model<span class="colon">:</span></dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
 </p></td>
@@ -134,7 +130,7 @@ It provides interfaces to get the out-of-sample performance and let’s you fine
 <span class="sig-name descname"><span class="pre">explore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble_class:</span> <span class="pre">~typing.Type[~fintuna.ensemble.BaseEnsemble.BaseEnsemble]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'fintuna.ensemble.IndividualEnsemble.IndividualEnsemble'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">study_params:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_params:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_params:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_size=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_params:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conf_thrs_trials=20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_trials=100</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><span class="pre">dict</span></a></span></span><a class="headerlink" href="#fintuna.FinStudy.explore" title="Permalink to this definition"></a></dt>
 <dd><p>Train, Tune and explore the performance of a Model. Use Ensemble to combine the best performing models.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ensemble_class</strong> – Ensemble to use</p></li>
 <li><p><strong>study_params</strong> – Params of the <a class="reference external" href="https://optuna.readthedocs.io/en/v3.0.0/reference/generated/optuna.study.create_study.html#optuna.study.create_study">optuna study</a></p></li>
@@ -146,7 +142,7 @@ It provides interfaces to get the out-of-sample performance and let’s you fine
 <li><p><strong>n_trials</strong> – Number of trials</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl>
 <dt>Tuning results</dt><dd><p>’feature_importances’: pandas Series of feature importances</p>
 <p>’shap’: tuple of (shap values, expected value, observations)</p>
@@ -166,7 +162,7 @@ It provides interfaces to get the out-of-sample performance and let’s you fine
 Uses best models of tune data as candidates and sub-selects models that also perform well on eval data.
 Refits models on all data.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>n_candidates</strong> – Number of candidates to consider for selection, defaults to 5 * ensemble_size</p>
 </dd>
 </dl>
