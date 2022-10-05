@@ -88,7 +88,7 @@ Install fintuna via pip.
 
     pip install fintuna
 
-Run the most basic example below. For detailed guidance look at the `docs <https://fintuna.readthedocs.io/en/latest/>`_.
+Run the most basic example below. For detailed guidance look at the `docs <https://markoarnauto.github.io/fintuna/examples.html>`_.
 
 .. code:: python
 
