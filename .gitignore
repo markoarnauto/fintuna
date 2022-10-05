@@ -2,7 +2,7 @@
 .idea
 docs/source/_autosummary
 example_templates
-docs/jupyter_execute
+jupyter_execute
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,jupyternotebooks
 
@@ -31,7 +31,6 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
 develop-eggs/
 dist/
 downloads/

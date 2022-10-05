@@ -1,0 +1,34 @@
+﻿fintuna.utils
+=============
+
+.. automodule:: fintuna.utils
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      create_tearsheet
+      get_crypto_data
+      get_performance_metrics
+      lagged_features
+      plot_backtest
+      zscore
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

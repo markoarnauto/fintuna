@@ -1,0 +1,31 @@
+fintuna.model.ModelBase
+=======================
+
+.. currentmodule:: fintuna.model
+
+.. autoclass:: ModelBase
+   :show-inheritance:
+   :inherited-members:
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ModelBase.__init__
+      ~ModelBase.explain
+      ~ModelBase.extract_label
+      ~ModelBase.get_feature_importances
+      ~ModelBase.get_performance
+      ~ModelBase.predict
+      ~ModelBase.realized_returns
+      ~ModelBase.train
+   
+   
+
+   
+   
+   

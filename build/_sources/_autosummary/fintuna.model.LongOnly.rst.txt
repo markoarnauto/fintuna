@@ -1,0 +1,31 @@
+fintuna.model.LongOnly
+======================
+
+.. currentmodule:: fintuna.model
+
+.. autoclass:: LongOnly
+   :show-inheritance:
+   :inherited-members:
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~LongOnly.__init__
+      ~LongOnly.explain
+      ~LongOnly.extract_label
+      ~LongOnly.get_feature_importances
+      ~LongOnly.get_performance
+      ~LongOnly.predict
+      ~LongOnly.realized_returns
+      ~LongOnly.train
+   
+   
+
+   
+   
+   

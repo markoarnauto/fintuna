@@ -1,0 +1,26 @@
+﻿fintuna.FinStudy
+================
+
+.. currentmodule:: fintuna
+
+.. autoclass:: FinStudy
+   :show-inheritance:
+   :inherited-members:
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~FinStudy.__init__
+      ~FinStudy.explore
+      ~FinStudy.finish
+   
+   
+
+   
+   
+   

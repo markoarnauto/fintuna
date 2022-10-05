@@ -1,0 +1,6 @@
+﻿fintuna.run
+===========
+
+.. currentmodule:: fintuna
+
+.. autofunction:: run

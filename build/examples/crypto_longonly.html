@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crypto prediction &mdash; Fintuna 0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Crypto End2End Prediction" href="end2end_crypto_longonly.html" />
+    <link rel="prev" title="Examples" href="../examples.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Fintuna
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Crypto prediction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="end2end_crypto_longonly.html">Crypto End2End Prediction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="crypto_pumps.html">Crypto Pumps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Fintuna</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../examples.html">Examples</a> &raquo;</li>
+      <li>Crypto prediction</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/examples/crypto_longonly.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="crypto-prediction">
+<h1>Crypto prediction<a class="headerlink" href="#crypto-prediction" title="Permalink to this heading"></a></h1>
+<p>This is a basic example of a simple long-only trading strategy for crypto assets. We use pre-packed data from Fintuna. <code class="docutils literal notranslate"><span class="pre">get_crypto_features</span></code> provides returns, trading volumes and their lagged values (for more details see <em>End2End Crypto Prediction</em>). Keep in mind that the data was not intended for production, it was intended to showcase Fintuna.</p>
+<div class="cell tag_remove-stdout tag_remove-stderr docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fintuna</span> <span class="k">as</span> <span class="nn">ft</span>
+<span class="n">data</span><span class="p">,</span> <span class="n">specs</span> <span class="o">=</span> <span class="n">ft</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get_crypto_features</span><span class="p">()</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;AAVEUSDT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">:,</span> <span class="p">:</span><span class="mi">5</span><span class="p">]</span>  <span class="c1"># look at a tiny sample of the data (e.g some AAVE features)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>volume</th>
+      <th>return</th>
+      <th>volume__change</th>
+      <th>return__change</th>
+      <th>volume__shift1</th>
+      <th>return__shift1</th>
+      <th>volume__shift2</th>
+      <th>return__shift2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2022-08-30 00:00:00+00:00</th>
+      <td>-0.467270</td>
+      <td>0.060569</td>
+      <td>-0.609921</td>
+      <td>1.069866</td>
+      <td>-1.197886</td>
+      <td>0.029262</td>
+      <td>-0.612111</td>
+      <td>-0.041463</td>
+    </tr>
+    <tr>
+      <th>2022-08-30 12:00:00+00:00</th>
+      <td>-0.676362</td>
+      <td>0.004662</td>
+      <td>0.447475</td>
+      <td>-0.923029</td>
+      <td>-0.467270</td>
+      <td>0.060569</td>
+      <td>-1.197886</td>
+      <td>0.029262</td>
+    </tr>
+    <tr>
+      <th>2022-08-31 00:00:00+00:00</th>
+      <td>-0.020041</td>
+      <td>-0.019722</td>
+      <td>-0.970369</td>
+      <td>-5.230278</td>
+      <td>-0.676362</td>
+      <td>0.004662</td>
+      <td>-0.467270</td>
+      <td>0.060569</td>
+    </tr>
+    <tr>
+      <th>2022-08-31 12:00:00+00:00</th>
+      <td>-0.577161</td>
+      <td>0.034320</td>
+      <td>27.798593</td>
+      <td>-2.740202</td>
+      <td>-0.020041</td>
+      <td>-0.019722</td>
+      <td>-0.676362</td>
+      <td>0.004662</td>
+    </tr>
+    <tr>
+      <th>2022-09-01 00:00:00+00:00</th>
+      <td>-0.476985</td>
+      <td>-0.029748</td>
+      <td>-0.173567</td>
+      <td>-1.866803</td>
+      <td>-0.577161</td>
+      <td>0.034320</td>
+      <td>-0.020041</td>
+      <td>-0.019722</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>We are going to use the <code class="docutils literal notranslate"><span class="pre">LongOnly</span></code> model. It predicts whether an asset is going to have positive returns after a period. A period a 12 hours as defined in the <code class="docutils literal notranslate"><span class="pre">specs</span></code>. Each period the asset with the highest confidence (if the estimation is confident enough) is bought. We use <code class="docutils literal notranslate"><span class="pre">explore</span></code> to select hyper-paremters, to train the model and provide an out-of-sample backtest.</p>
+<div class="cell tag_remove-stdout tag_remove-stderr docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_study</span> <span class="o">=</span> <span class="n">ft</span><span class="o">.</span><span class="n">FinStudy</span><span class="p">(</span><span class="n">ft</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">LongOnly</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
+<span class="c1"># tune, train, ensemble, simulate performance</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">crypto_study</span><span class="o">.</span><span class="n">explore</span><span class="p">(</span><span class="n">n_trials</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">ensemble_size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># this will take some minutes</span>
+<span class="n">ft</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">plot_backtest</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;performance&#39;</span><span class="p">],</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;benchmark&#39;</span><span class="p">])</span>  <span class="c1"># plot backtest</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/0dce58734a603543a2258cdb4d4a58b6b9c4ca74ffc2a9c4511594d2033df471.png" src="../_images/0dce58734a603543a2258cdb4d4a58b6b9c4ca74ffc2a9c4511594d2033df471.png" />
+</div>
+</div>
+<p>We inspect that our strategy generated 27% cumumatlive returns which is superior to the benchmark that is equivalent to holding all crypto assets (equally weighted). Fintuna by default selects a confidence threshold for entering trades. Therefore, only a couple of trades are exectued over the evaluation period.</p>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="n">top_features</span> <span class="o">=</span> <span class="n">crypto_study</span><span class="o">.</span><span class="n">ensemble</span><span class="o">.</span><span class="n">feature_importances</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">top_features</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;barh&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<img alt="../_images/1c706f00c2a563705cd0901cbde420c87225f65063bffea465408cae8e3cc26a.png" src="../_images/1c706f00c2a563705cd0901cbde420c87225f65063bffea465408cae8e3cc26a.png" />
+</div>
+</div>
+<p>Looking at the feature importance we see that trades are essentially based on previous <em>return</em>. We are curious whether the model is like a momentum strategy (postivie past returns yield positive future returns) or more like a mean reversion strategy (past returns tend to revert).</p>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">shap</span>
+<span class="n">shap</span><span class="o">.</span><span class="n">dependence_plot</span><span class="p">(</span><span class="s1">&#39;return&#39;</span><span class="p">,</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;shap&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;shap&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">xmax</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<img alt="../_images/c92a19498eb9c922176bf12d1d799acc6f63344b1ddf53106009407e8e7c5471.png" src="../_images/c92a19498eb9c922176bf12d1d799acc6f63344b1ddf53106009407e8e7c5471.png" />
+</div>
+</div>
+<p>We inspect that it is in general a weak pattern (but it’s finance, so get used to it). The y-axis shows the models confidence for predicting positive returns and the x-axis shows past returns. More common past returns between -8% and +10% (-0.08 and 0.1 on the x-axis) have little predictive information. Though high losses &lt; -8% seem to indicate positive future returns. Especially when there is increased long-term trading volume (red dots in the left corner). To sum up, the model seems to buy assets that had high losses accompanied by high long-term trading volume.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../examples.html" class="btn btn-neutral float-left" title="Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="end2end_crypto_longonly.html" class="btn btn-neutral float-right" title="Crypto End2End Prediction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Cortecs.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

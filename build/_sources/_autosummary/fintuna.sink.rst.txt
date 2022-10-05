@@ -1,0 +1,31 @@
+﻿fintuna.sink
+============
+
+.. automodule:: fintuna.sink
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   fintuna.sink.LogSink
+

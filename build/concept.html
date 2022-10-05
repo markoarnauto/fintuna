@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi Asset &mdash; Fintuna 0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Fintuna
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Fintuna</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Multi Asset</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/concept.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="multi-asset">
+<h1>Multi Asset<a class="headerlink" href="#multi-asset" title="Permalink to this heading"></a></h1>
+<p>Looking at multiple assets is supposed to reveal more alpha-opportunities than looking at a single one. Also,
+the more assets the more data which is beneficial for machine learning tasks.
+Therefore, <em>Fintuna</em> is designed for multi-asset applications. The data structure
+is a <a class="reference external" href="https://pandas.pydata.org/docs/user_guide/advanced.html#multiindex-advanced-indexing">Pandas Multiindex Dataframe</a> where the index is time, the first column-level is the asset and the second is the feature (= panel or longitudinal data).
+Internally features are stacked and a model is trained to learn cross-asset patterns.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 7%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 13%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 13%" />
+<col style="width: 11%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head" colspan="2"><p>Asset 1</p></th>
+<th class="head" colspan="2"><p>Asset 2</p></th>
+<th class="head" colspan="2"><p>Asset 3</p></th>
+<th class="head" colspan="2"><p>Asset 4</p></th>
+</tr>
+<tr class="row-even"><th class="head"><p>#</p></th>
+<th class="head"><p>feature1</p></th>
+<th class="head"><p>feature2</p></th>
+<th class="head"><p>feature1</p></th>
+<th class="head"><p>feature2</p></th>
+<th class="head"><p>feature1</p></th>
+<th class="head"><p>feature2</p></th>
+<th class="head"><p>feature1</p></th>
+<th class="head"><p>feature2</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-odd"><td><p>t0</p></td>
+<td><p>float</p></td>
+<td><p>category</p></td>
+<td><p>float</p></td>
+<td><p>category</p></td>
+<td><p>float</p></td>
+<td><p>category</p></td>
+<td><p>float</p></td>
+<td><p>NaN</p></td>
+</tr>
+<tr class="row-even"><td><p>t1</p></td>
+<td><p>float</p></td>
+<td><p>category</p></td>
+<td><p>float</p></td>
+<td><p>category</p></td>
+<td><p>float</p></td>
+<td><p>category</p></td>
+<td><p>float</p></td>
+<td><p>NaN</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="strategy-agnostic">
+<h1>Strategy Agnostic<a class="headerlink" href="#strategy-agnostic" title="Permalink to this heading"></a></h1>
+<p>Fintuna is not tied to one specific trading strategy. Strategies are implemented as <a class="reference internal" href="_autosummary/fintuna.model.ModelBase.html#fintuna.model.ModelBase" title="fintuna.model.ModelBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">fintuna.model.ModelBase</span></code></a>.
+It defines the classification task (= <cite>extract_label</cite>)
+as well as a a classification-to-returns mapping (= <cite>realized_returns</cite>).
+A simple example is to predict the directional change and buy the asset with the
+most confident prediction (see <a class="reference internal" href="_autosummary/fintuna.model.LongOnly.html#fintuna.model.LongOnly" title="fintuna.model.LongOnly"><code class="xref py py-class docutils literal notranslate"><span class="pre">fintuna.model.LongOnly</span></code></a>).</p>
+</section>
+<section id="backtesting">
+<h1>Backtesting<a class="headerlink" href="#backtesting" title="Permalink to this heading"></a></h1>
+<p>Fintuna uses walk-forward backtesting.</p>
+<ul class="simple">
+<li><p>Train data is used to train the classifier.</p></li>
+<li><p>Tune data is used for hyper-parameter optimization.</p></li>
+<li><p>Eval data is used for backtesting</p></li>
+</ul>
+<p>Executing the <code class="xref py py-meth docutils literal notranslate"><span class="pre">fintuna.Finstudy.explore()</span></code> method multiple times on same data introduces the risk of overfitting.
+<strong>Use feature importance and shap values, rather than merely looking at trading performance.</strong></p>
+<img alt="Walk-Forward Backtesting" src="_images/backtesting.png" />
+<p>Calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">fintuna.Finstudy.finish()</span></code> prepares the model for deployment. It sub-selects models that also perform well on evaluation data.
+and refits them on all data.</p>
+</section>
+<section id="data-first">
+<h1>Data First<a class="headerlink" href="#data-first" title="Permalink to this heading"></a></h1>
+<p>A good trading strategy demands good and possibly unique data.
+Fintuna does <strong>NOT</strong> help you in finding the right data. But consider the following guidelines:</p>
+<ul class="simple">
+<li><p>Have at least a few hundreds of observations.</p></li>
+<li><p>Use multiple assets.</p></li>
+<li><p>Use assets with similar characteristics (e.g. cryptos, tech-stocks, etc.).</p></li>
+<li><p>Make sure features across assets have similar properties (otherwise use zscore).</p></li>
+<li><p>Use lagged features to boost performance.</p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Cortecs.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

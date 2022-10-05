@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crypto Pumps &mdash; Fintuna 0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API" href="../api.html" />
+    <link rel="prev" title="Crypto End2End Prediction" href="end2end_crypto_longonly.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Fintuna
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="crypto_longonly.html">Crypto prediction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="end2end_crypto_longonly.html">Crypto End2End Prediction</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Crypto Pumps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Fintuna</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../examples.html">Examples</a> &raquo;</li>
+      <li>Crypto Pumps</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/examples/crypto_pumps.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="crypto-pumps">
+<h1>Crypto Pumps<a class="headerlink" href="#crypto-pumps" title="Permalink to this heading"></a></h1>
+<p>This example demonstrates the flexibility of Fintuna. We want to predict short-term crypto pumps. In other words, we want to predict wich crypto asset are most likely to yield abnormally high returns within the next 24 hours. The assumption is that moderate price changes are random and hard to predict, but abnormal returns have patterns that can be captured. But we don’t know exactly how extreme these returns must be. Should we try to predict the top 2% or the top 20% of returns?</p>
+<p>We use Fintuna to select the optimal value automatiaclly and further explore how profitable such a strategy would be.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">optuna</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">import</span> <span class="nn">shap</span>
+<span class="kn">import</span> <span class="nn">fintuna</span> <span class="k">as</span> <span class="nn">ft</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Crypto assets are highly correlated. Therfore, if one asset is increasing in value, it’s hard to say whether something happened to that particular asset or wether the overall market increased. Therefore, we are going to predict an asset’s change in comparision to Bitcoin, which we use as a proxy of the crypto market. In other words, we are going to predict BTC-pairs and not USDT-pairs. As features we will returns, trading volume and sentiment provided by <a class="reference external" href="https://cortecs.ai">cortecs.ai</a>. We assume that social sentiment is highly connected with those crypto pumps. We ran some preprocessing steps (such as feature lagging) and packaged the data to be ready-to-use.</p>
+<div class="cell tag_remove-stderr docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">,</span> <span class="n">data_specs</span> <span class="o">=</span> <span class="n">ft</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get_btcpairs_with_social_sentiment</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Supported assets: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">fin</span><span class="o">.</span><span class="n">asset_names</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Supported assets: [&#39;ETHBTC&#39;, &#39;LTCBTC&#39;, &#39;XRPBTC&#39;, &#39;LINKBTC&#39;, &#39;BNBBTC&#39;, &#39;TRXBTC&#39;, &#39;XLMBTC&#39;, &#39;XTZBTC&#39;, &#39;ADABTC&#39;, &#39;EOSBTC&#39;, &#39;BCHBTC&#39;, &#39;XMRBTC&#39;, &#39;DASHBTC&#39;, &#39;NEOBTC&#39;, &#39;ATOMBTC&#39;, &#39;ZECBTC&#39;, &#39;BATBTC&#39;, &#39;VETBTC&#39;, &#39;SUSHIBTC&#39;, &#39;UNIBTC&#39;, &#39;AAVEBTC&#39;, &#39;ALGOBTC&#39;, &#39;DOTBTC&#39;, &#39;ETCBTC&#39;, &#39;SOLBTC&#39;, &#39;DOGEBTC&#39;, &#39;MATICBTC&#39;, &#39;HNTBTC&#39;, &#39;YFIBTC&#39;, &#39;ZILBTC&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<p>The data has a sampling frequency of 3 hours (see <code class="docutils literal notranslate"><span class="pre">data_specs</span></code>) and ranges from 2020-01-02 to 2022-09-08.
+The data contains 30 assets each having 107 features.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Pumps</span></code> strategy is ready-to-use and we don’t have to implement it ourselves. So, let’s create a finstudy and <code class="docutils literal notranslate"><span class="pre">explore</span></code> how it performs. We use 100 tuning iterations and an ensemble size of 4 (this will take a while).</p>
+<div class="cell tag_remove-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_pumps_study</span> <span class="o">=</span> <span class="n">ft</span><span class="o">.</span><span class="n">FinStudy</span><span class="p">(</span><span class="n">ft</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">Pumps</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_specs</span><span class="o">=</span><span class="n">data_specs</span><span class="p">)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">crypto_pumps_study</span><span class="o">.</span><span class="n">explore</span><span class="p">(</span><span class="n">n_trials</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">ensemble_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_remove-stderr tag_remove-stdout docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">optuna</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">plot_optimization_history</span><span class="p">(</span><span class="n">crypto_pumps_study</span><span class="o">.</span><span class="n">study</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/771a5610ab2ac402e3990292a998ca9bb226d14351422c4be27b5a6b157f51aa.png" src="../_images/771a5610ab2ac402e3990292a998ca9bb226d14351422c4be27b5a6b157f51aa.png" />
+</div>
+</div>
+<p>We see the outputs of all trials (<code class="docutils literal notranslate"><span class="pre">n_trials</span> <span class="pre">x</span> <span class="pre">conf_thrshold_trials</span></code>). We inspect that outputs tend to provide positive results with an average of 90% cumulative returns (0.9 on the y-axis). But the variance is high ranging from gains of 480% to losses of 260%. With <code class="docutils literal notranslate"><span class="pre">ensemble_size</span></code> set to 4, we will use the best 4 models to compute an out-of-sample backtest.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ft</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">plot_backtest</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;performance&#39;</span><span class="p">],</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;benchmark&#39;</span><span class="p">])</span>
+<span class="c1">## to retrieve a detailed html-trading report</span>
+<span class="c1"># ft.utils.create_tearsheet(results[&#39;performance&#39;], results[&#39;benchmark&#39;], &#39;crypto_pumps_tearsheet.html&#39;)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/f86cd07768b3e2c8eadc625ed9e45750b42d814488816e56adad17ce499a1956.png" src="../_images/f86cd07768b3e2c8eadc625ed9e45750b42d814488816e56adad17ce499a1956.png" />
+</div>
+</div>
+<p>The backtest yields 68% cumulative returns. It seems to have detected a couple of pumps, among them the Zilliqa-pump at the end of April. Keep in mind that we are predicting BTC-pairs. So those returns are in BTC. If we would have used our strategy we would have ended up with +68% of BTC while buy-and-hold would have returned +23%.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">metrics</span> <span class="o">=</span> <span class="n">ft</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_performance_metrics</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;performance&#39;</span><span class="p">],</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;benchmark&#39;</span><span class="p">])</span>
+<span class="n">metrics</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s1">&#39;Time in Market &#39;</span><span class="p">,</span> <span class="s1">&#39;Total Return &#39;</span><span class="p">,</span> <span class="s1">&#39;Sortino&#39;</span><span class="p">,</span> <span class="s1">&#39;Max Drawdown &#39;</span><span class="p">],</span> <span class="p">:]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Strategy</th>
+      <th>Benchmark</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Time in Market</th>
+      <td>0.25</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>Total Return</th>
+      <td>0.68</td>
+      <td>0.23</td>
+    </tr>
+    <tr>
+      <th>Sortino</th>
+      <td>5.78</td>
+      <td>1.38</td>
+    </tr>
+    <tr>
+      <th>Max Drawdown</th>
+      <td>-0.15</td>
+      <td>-0.34</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>By default Fintuna selects a confidence threshold when to enter a position. If this threshold is not reached, nothing is allocated which explains the <code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">in</span> <span class="pre">Market</span></code> of 25%. Fintuna by design generates passive models with little exposure (this allows you to use stacking &amp; yield farming while no trading opportunity is detected).
+The <code class="docutils literal notranslate"><span class="pre">Sortino</span></code> of 5.78 and <code class="docutils literal notranslate"><span class="pre">Max</span> <span class="pre">Drawdown</span></code> of -15% indicate an excellent risk-return profile (since returns are in BTC we are still exposed to Bitcoin’s volatility).</p>
+<div class="cell tag_remove-stdout tag_remove-stderr docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">optuna</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">plot_param_importances</span><span class="p">(</span><span class="n">crypto_pumps_study</span><span class="o">.</span><span class="n">study</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/a74c400dcd51a825939c160886d6bc0f8d9f7bc4d846a4785652c43409ac5de0.png" src="../_images/a74c400dcd51a825939c160886d6bc0f8d9f7bc4d846a4785652c43409ac5de0.png" />
+</div>
+</div>
+<p>By looking at the hyper-parameter importance, we see that subsampling and the threshold to label sometings as “pump” (= <code class="docutils literal notranslate"><span class="pre">anomaly_magnitude</span></code>) are essential .</p>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">crypto_pumps_study</span><span class="o">.</span><span class="n">study</span><span class="o">.</span><span class="n">trials_dataframe</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;params_anomaly_magnitude&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;value&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;AxesSubplot:xlabel=&#39;params_anomaly_magnitude&#39;, ylabel=&#39;value&#39;&gt;
+</pre></div>
+</div>
+<img alt="../_images/c246cd17d67d3440fe0fcaf5d72c47dc63c93f401c546b41bb2c1deeeee1e3e0.png" src="../_images/c246cd17d67d3440fe0fcaf5d72c47dc63c93f401c546b41bb2c1deeeee1e3e0.png" />
+</div>
+</div>
+<p>Looking closer, we see that the best performance is achieved by predicting the top 10-5% (0.9-0.95 on the x-axis) returns.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">shap</span><span class="o">.</span><span class="n">summary_plot</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;shap&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;shap&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">max_display</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/29d8807349e4070eb43c78cf2e3826dee48c800aecfd536945378596ae36d854.png" src="../_images/29d8807349e4070eb43c78cf2e3826dee48c800aecfd536945378596ae36d854.png" />
+</div>
+</div>
+<p>The most important features for detecting pumps are volatility-based. Of course the probability of an asset to yield abnormally high returns is dependend on it’s volatility (the probability to yield abnormally low returns as well). I assume that top-level splits are based on past volatility while deeper splits take more subtle features such as <em>twitter activity</em> and <em>sentiment</em> into account.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="end2end_crypto_longonly.html" class="btn btn-neutral float-left" title="Crypto End2End Prediction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../api.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Cortecs.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
