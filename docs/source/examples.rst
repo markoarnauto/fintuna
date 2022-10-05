@@ -6,5 +6,5 @@ Examples
 
 .. toctree::
     examples/crypto_longonly
-    examples/end2end_crypto_longonly
     examples/crypto_pumps
+    examples/end2end_crypto_longonly

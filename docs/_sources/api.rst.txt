@@ -4,7 +4,6 @@ API
 .. hidden::
 .. autosummary::
     :toctree: _autosummary
-        :hidden:
     :recursive:
 
     fintuna.FinStudy
