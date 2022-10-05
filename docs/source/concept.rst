@@ -19,11 +19,11 @@ t1    float     category   float    category  float     category  float     NaN
 Strategy Agnostic
 ------------------
 
-Fintuna is not tied to one specific trading strategy. Strategies are implemented as `fintuna.model.ModelBase`.
+Fintuna is not tied to one specific trading strategy. Strategies are implemented as :py:class:`fintuna.model.ModelBase`.
 It defines the classification task (= `extract_label`)
 as well as a a classification-to-returns mapping (= `realized_returns`).
 A simple example is to predict the directional change and buy the asset with the
-most confident prediction (see :`fintuna.model.LongOnly`).
+most confident prediction (see :py:class:`fintuna.model.LongOnly`).
 
 Backtesting
 ------------
@@ -34,14 +34,14 @@ Fintuna uses walk-forward backtesting.
 * Tune data is used for hyper-parameter optimization.
 * Eval data is used for backtesting
 
-Executing the `fintuna.Finstudy.explore` method multiple times on same data introduces the risk of overfitting.
+Executing the :py:meth:`fintuna.Finstudy.explore` method multiple times on same data introduces the risk of overfitting.
 **Use feature importance and shap values, rather than merely looking at trading performance.**
 
 .. image:: images/backtesting.png
     :alt: Walk-Forward Backtesting
 
 
-Calling `fintuna.Finstudy.finish` prepares the model for deployment. It sub-selects models that also perform well on evaluation data.
+Calling :py:meth:`fintuna.Finstudy.finish` prepares the model for deployment. It sub-selects models that also perform well on evaluation data.
 and refits them on all data.
 
 Data First
