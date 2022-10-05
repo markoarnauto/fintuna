@@ -1,14 +1,23 @@
+.. image:: https://github.com/markoarnauto/fintuna/blob/main/docs/source/images/fintuna-logo.png?raw=true
+    :alt: Fintuna Logo
+    :width: 700
+
 .. include:: docs/source/intro.rst
 .. include:: docs/source/concept.rst
 
 Usage
 =======
 
-Install fintuna: :bash:`pip install fintuna`
+Install fintuna via pip.
+
+.. code:: bash
+
+    pip install fintuna
 
 Run the most basic example below. For detailed guidance look at the `docs <https://fintuna.readthedocs.io/en/latest/>`_.
 
-.. code-block:: python
+.. code:: python
+
     import fintuna as ft
 
     # get data
