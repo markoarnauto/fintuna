@@ -78,7 +78,7 @@ def lagged_features(data: pd.DataFrame, period, n_periods) -> pd.DataFrame:
     rollingmean_longterm = data.rolling(longterm_periods * period_dt).mean().shift(freq=(midterm_periods + 3) * period_dt)\
         .rename(columns={name: f'{name}__rollingmean_longterm' for name in feature_names}, level=1)
 
-    data_extended = pd.concat([data, change, shift_1, shift_2, rollingmean_midterm, rollingmean_longterm], axis=1)
+    data_extended = pd.concat([change, shift_1, shift_2, rollingmean_midterm, rollingmean_longterm], axis=1)
     data_extended = data_extended.loc[data.index, :]
     return data_extended
 

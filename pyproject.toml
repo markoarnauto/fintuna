@@ -8,16 +8,16 @@ requires = [
     "lightgbm==3.2.1",
     "optuna~=3.0.0",
     "tables~=3.7.0",
-    "myst-nb~=0.17.1"
 ]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "fintuna"
+version = "0.1.1"
 authors = [
     { name = "Cortecs", email = "office@cortecs.ai" },
 ]
-dynamic = ["version", "description"]
+description = "Parameter optimization for finance"
 requires-python = ">=3.7"
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -28,3 +28,6 @@ classifiers = [
 [project.urls]
 "Homepage" = "https://github.com/markoarnauto/fintuna"
 "Bug Tracker" = "https://github.com/markoarnauto/fintuna/issues"
+
+[tool.setuptools]
+packages = ["fintuna"]
