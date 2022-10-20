@@ -13,7 +13,9 @@ class LongOnly(ModelBase):
         """
         returns = data.xs('return', axis=1, level=1)
         next_returns = returns.shift(freq=f'-{period}')
-        return next_returns > 0.
+        labels = next_returns > 0.
+        labels[next_returns.isna()] = np.nan
+        return labels
 
     def realized_returns(self, predictions, conf_threshold, returns, period):
         """

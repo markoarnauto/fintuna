@@ -1,5 +1,5 @@
 from fintuna.model.LongOnly import LongOnly
-
+import numpy as np
 
 class Pumps(LongOnly):
     """
@@ -19,4 +19,6 @@ class Pumps(LongOnly):
 
         thrs = returns.stack().quantile(anomaly_magnitude)
         next_returns = returns.shift(freq=f'-{period}')
-        return next_returns > thrs
+        labels = next_returns > thrs
+        labels[next_returns.isna()] = np.nan
+        return labels
