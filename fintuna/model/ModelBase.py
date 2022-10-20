@@ -54,7 +54,7 @@ class ModelBase(ABC):
             'lambda_l1': self.trial.suggest_loguniform('lambda_l1', .01, 10.),
             'lambda_l2': self.trial.suggest_loguniform('lambda_l2', .01, 10.),
             'num_leaves': self.trial.suggest_int('num_leaves', 2, 63),
-            'feature_fraction': self.trial.suggest_float('feature_fraction', .5, 1.)
+            'feature_fraction': self.trial.suggest_float('feature_fraction', .4, 1.)
         })
         return clf
 
@@ -191,7 +191,7 @@ class ModelBase(ABC):
         """
         pass
 
-    def get_performance(self, realized_returns) -> float:
+    def get_performance(self, realized_returns, period) -> float:
         """
         Specify how returns correspond to performance (= objective of the tuning process)
 

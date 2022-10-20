@@ -183,7 +183,7 @@ class FinStudy:
                 realized_returns = model.realized_returns(predictions, thrs, returns, self.period)
                 # todo make some checks on realized_returns
 
-                performance = model.get_performance(realized_returns)
+                performance = model.get_performance(realized_returns, self.period)
 
                 # add trial copy to study
                 params_thrs = tmp_trial.params.copy()
@@ -201,12 +201,14 @@ class FinStudy:
         self.ensemble = self._create_ensemble(best_trials, self.real_data_train)
 
         out_of_sample_realized_returns = self.ensemble.realized_returns(self.real_data_test)
+        out_of_sample_realized_returns.name = 'performance'
         # calculate exposure
         exposed_dur = (~out_of_sample_realized_returns.isna()).sum() * pd.Timedelta(self.period)
         dur = out_of_sample_realized_returns.index[-1] - out_of_sample_realized_returns.index[0]
         exposure = exposed_dur / dur
         # get exposure adjusted benchmark
         benchmark_realized_returns = self.real_data_test.loc[:, (slice(None), self.returns_column)].resample(self.period).last().mean(axis=1) * exposure
+        benchmark_realized_returns.name = 'benchmark_performance'
 
         feature_importances = self.ensemble.feature_importances()
         shap_values = self.ensemble.shap_values(self.real_data_test)
@@ -237,7 +239,7 @@ class FinStudy:
 
             conf_thrs = model.trial.params['conf_thrs']
             real_returns = model.realized_returns(predictions, conf_thrs, returns_test, self.period)
-            trial.performance = model.get_performance(real_returns)
+            trial.performance = model.get_performance(real_returns, self.period)
             log.info(f'out-of-sample performance: {trial.performance}')
         final_trials = sorted(candidate_trials, key=lambda x: x.performance, reverse=True)[:self.ensemble_size]
     
