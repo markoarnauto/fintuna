@@ -3,7 +3,7 @@
     :width: 700
 
 Fintuna: Parameter optimization for finance
-==========================================
+============================================
 
 **Fintuna** is a framework that uses machine learning for asset management. It enables fast prototyping for multi-asset applications such as stock-picking.
 

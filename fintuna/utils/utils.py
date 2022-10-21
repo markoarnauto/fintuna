@@ -72,7 +72,7 @@ def lagged_features(data: pd.DataFrame, period, n_periods) -> pd.DataFrame:
 
     # two non-overlapping periods for taking the mean
     midterm_periods = n_periods // 3  # one third
-    longterm_periods = n_periods // 3 * 2  # two thirds
+    longterm_periods = n_periods // 3 * 2 - 3  # two thirds minus shift
     rollingmean_midterm = data.rolling(midterm_periods * period_dt).mean().shift(freq=3 * period_dt)\
         .rename(columns={name: f'{name}__rollingmean_midterm' for name in feature_names}, level=1)
     rollingmean_longterm = data.rolling(longterm_periods * period_dt).mean().shift(freq=(midterm_periods + 3) * period_dt)\

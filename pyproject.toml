@@ -1,19 +1,11 @@
 [build-system]
-requires = [
-    "setuptools>=61.0",
-    "pandas~=1.2.3",
-    "numpy~=1.20.0",
-    "scikit-learn==0.24.1",
-    "APScheduler==3.7.0",
-    "lightgbm==3.2.1",
-    "optuna~=3.0.0",
-    "tables~=3.7.0",
-]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "fintuna"
-version = "0.1.1"
+version = "0.1.4"
+readme = "README.rst"
 authors = [
     { name = "Cortecs", email = "office@cortecs.ai" },
 ]
@@ -24,6 +16,18 @@ classifiers = [
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Operating System :: OS Independent",
 ]
+dependencies = [
+    "pandas~=1.2.3",
+    "numpy~=1.20.0",
+    "scikit-learn==0.24.1",
+    "APScheduler==3.7.0",
+    "lightgbm==3.2.1",
+    "QuantStats==0.0.46",
+    "matplotlib~=3.4.3",
+    "optuna~=3.0.0",
+    "tables~=3.7.0"
+]
+
 
 [project.urls]
 "Homepage" = "https://github.com/markoarnauto/fintuna"
@@ -31,3 +35,13 @@ classifiers = [
 
 [tool.setuptools]
 packages = ["fintuna"]
+
+[project.optional-dependencies]
+dev = [
+    "shap~=0.40.0",
+    "python-binance~=1.0.0",
+    "sphinx~=5.2.0",
+    "sphinx-rtd-theme~=1.0.0",
+    "myst-nb~=0.17.1",
+    "sphinx-toolbox~=3.2.0"
+]
