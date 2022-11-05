@@ -5,7 +5,7 @@ import lightgbm as lgb
 import optuna
 import pandas as pd
 import sklearn
-
+import numpy as np
 
 tune_log = logging.getLogger('tune_log')
 live_log = logging.getLogger('live')
@@ -154,18 +154,21 @@ class ModelBase(ABC):
         :param data: Panel data
         :return: shap values, expected value, observations
         """
-        data = data[self.asset_ids]
         X = data.fin.stack_asset_data()
         categorical_features = data.select_dtypes('category').fin.feature_names.to_list() + ['asset_id']
         X[categorical_features] = X[categorical_features].astype('category')
-        X = X[self.selected_features]
 
         # subsampling big data sets
-        max_size = 5000
+        max_size = 10000
         if len(X) > max_size:
             X = X.sample(max_size, random_state=0).sort_index()
+        unsupported_observations = ~X['asset_id'].isin(self.asset_ids)
+        X = X[self.selected_features]
+
         shap_values, expected_value = self._shap_values(X)
-        return pd.DataFrame(shap_values, columns=self.selected_features, index=X.index), expected_value, X
+        shap_values = pd.DataFrame(shap_values, columns=self.selected_features, index=X.index)
+        shap_values[unsupported_observations] = np.nan
+        return shap_values, expected_value, X
 
     @abstractmethod
     def extract_label(self, data, period) -> pd.DataFrame:
@@ -178,8 +181,9 @@ class ModelBase(ABC):
         """
         pass
 
+    @staticmethod
     @abstractmethod
-    def realized_returns(self, predictions, conf_threshold, returns, period) -> pd.Series:
+    def realized_returns(predictions, conf_threshold, returns, period) -> pd.Series:
         """
         Specify how predictions corresponds to returns (= prediction-returns mapping)
 

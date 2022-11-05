@@ -9,11 +9,16 @@ class BaseEnsemble(ABC):
         self.models = models
         self.returns_column = returns_column
         self.period = period
-        self.asset_ids = set()
-        self.features = set()
+        asset_ids = set()
+        features = set()
         for model in models:
-            self.asset_ids.update(model.asset_ids)
-            self.features.update(model.selected_features)
+            asset_ids.update(model.asset_ids)
+            features.update(model.selected_features)
+        # assure determinism
+        self.asset_ids = list(asset_ids)
+        self.asset_ids.sort()
+        self.features = list(features)
+        self.features.sort()
 
     @abstractmethod
     def publish(self, data):
@@ -58,7 +63,9 @@ class BaseEnsemble(ABC):
             shap_values_model, expected_value, observations = model.explain(data)
             shap_values.append(shap_values_model)
         shap_values = pd.concat(shap_values, axis=1, keys=range(len(self.models)))
-        return shap_values.mean(axis=1, level=1), expected_value, observations
+        shap_values = shap_values.mean(axis=1, level=1)
+        supported_observations = ~shap_values.isna().all(axis=1)
+        return shap_values[supported_observations], expected_value, observations[supported_observations]
 
     def __len__(self):
         return len(self.models)

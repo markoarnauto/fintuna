@@ -17,7 +17,8 @@ class LongOnly(ModelBase):
         labels[next_returns.isna()] = np.nan
         return labels
 
-    def realized_returns(self, predictions, conf_threshold, returns, period):
+    @staticmethod
+    def realized_returns(predictions, conf_threshold, returns, period):
         """
         Buy the asset with the most confident prediction.
         """
