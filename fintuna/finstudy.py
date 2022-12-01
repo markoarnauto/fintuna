@@ -225,7 +225,7 @@ class FinStudy:
         :param n_candidates: Number of candidates to consider for selection, defaults to 5 * ensemble_size
         """
         if not n_candidates:
-            n_candidates = self.ensemble_size * 5
+            n_candidates = self.ensemble_size * 2
 
         # todo store candidate models while exploring
         candidate_trials = self._get_best_trials(n_candidates)
